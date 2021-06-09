@@ -1,20 +1,22 @@
-# import os, sys
+# Converts GeoTIFF raster datasets in a folder to MRF format
+# @author Josh Birlingmair
+
+import os
 import arcpy
 
-# Set input and output folders
-in_folder      = r'C:\Users\josh.birlingmair\Documents\.USDA\ARS-PDI\pdi-raster-conversion-script'
-out_folder     = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\output'
+# Set input and output folders (These can be the same directory)
+input_folder          = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\Final 81B_rev'
+output_folder         = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\Output 81B'
 
-input_raster   = 'WC_MLRA_65_2008_2011.tif'
-output_raster  = 'WC_MLRA_65_2008_2011.mrf'
+arcpy.env.compression = 'LERC 0.000000' # Do not change
 
-# Do not change
-input_dataset  = f'{in_folder}\\{input_raster}'
-output_dataset = f'{out_folder}\\{output_raster}'
+for file in os.listdir(input_folder):
+    if file.endswith('.tif'):
+        input_raster  = file
+        output_raster = file.replace('.tif', '.mrf')
 
-print(f'Testing conversion of {input_raster} to {output_raster}')
-arcpy.management.CopyRaster(in_raster=input_dataset,
-                            out_rasterdataset=output_dataset,
-                            pixel_type='8 bit signed',
-                            format='MRF')
-print('Finished converting', input_raster)
+        print(f'Converting {input_raster} to {output_raster}')
+        arcpy.management.CopyRaster(in_raster=f'{input_folder}\\{input_raster}',
+                                    out_rasterdataset=f'{output_folder}\\{output_raster}',
+                                    pixel_type='8 bit signed',
+                                    format='MRF')

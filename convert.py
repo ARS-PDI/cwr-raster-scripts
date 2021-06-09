@@ -7,7 +7,6 @@ import arcpy
 # Set input and output folders (These can be the same directory)
 input_folder  = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\Final 81B_rev'
 output_folder = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\Output 81B'
-skipped       = []
 
 # Do not change
 arcpy.env.compression            = 'LERC 0'

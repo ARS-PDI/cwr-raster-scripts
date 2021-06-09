@@ -23,5 +23,7 @@ if __name__ == "__main__":
             arcpy.management.CopyRaster(in_raster=f'{input_folder}\\{input_raster}',
                                         out_rasterdataset=f'{output_folder}\\{output_raster}',
                                         background_value=0,
+                                        nodata_value=127,
                                         pixel_type='8_BIT_SIGNED',
-                                        format='MRF')
+                                        format='MRF',
+                                        transform='NONE')

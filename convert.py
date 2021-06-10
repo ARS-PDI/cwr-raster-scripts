@@ -2,11 +2,15 @@
 # @author Josh Birlingmair
 
 import os
+import sys
 import arcpy
 
-# Set input and output folders (These can be the same directory)
-input_folder  = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\Final 81B_rev'
-output_folder = r'C:\Users\josh.birlingmair\Documents\.USDA\RaBET\Output 81B'
+if len(sys.argv) == 3:
+    input_folder  = sys.argv[1]
+    output_folder = sys.argv[2]
+else:
+    print('Usage: python3 convert.py "C:/Users/.../Input Folder" "C:/Users/.../Output Folder"')
+    exit(1)
 
 # Do not change
 arcpy.env.compression            = 'LERC 0'

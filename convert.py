@@ -6,8 +6,8 @@ import sys
 import arcpy
 
 if len(sys.argv) == 3:
-    input_folder  = sys.argv[1]     # Input directory
-    output_folder = sys.argv[2]     # Output directory
+    input_folder  = sys.argv[1]
+    output_folder = sys.argv[2]
 else:
     print('Usage: python3 convert.py "C:/Users/.../Input Folder" "C:/Users/.../Output Folder"')
     exit(1)
@@ -27,6 +27,5 @@ if __name__ == "__main__":
                                         out_rasterdataset = f'{output_folder}/{output_raster}',
                                         background_value  = 0,
                                         nodata_value      = 127,
-                                        pixel_type        = '8_BIT_SIGNED',
                                         format            = 'MRF',
                                         transform         = 'NONE')

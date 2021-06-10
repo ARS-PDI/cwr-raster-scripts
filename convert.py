@@ -6,13 +6,12 @@ import sys
 import arcpy
 
 if len(sys.argv) == 3:
-    input_folder  = sys.argv[1]
-    output_folder = sys.argv[2]
+    input_folder  = sys.argv[1]     # Input directory
+    output_folder = sys.argv[2]     # Output directory
 else:
     print('Usage: python3 convert.py "C:/Users/.../Input Folder" "C:/Users/.../Output Folder"')
     exit(1)
 
-# Do not change
 arcpy.env.compression            = 'LERC 0'
 arcpy.env.outputCoordinateSystem = arcpy.SpatialReference('WGS 1984 UTM Zone 14N')
 arcpy.env.rasterStatistics       = 'STATISTICS 1 1'
@@ -24,8 +23,8 @@ if __name__ == "__main__":
             output_raster = file.replace('.tif', '.mrf')
 
             print(f'Converting {input_raster} to {output_raster}')
-            arcpy.management.CopyRaster(in_raster         = f'{input_folder}\\{input_raster}',
-                                        out_rasterdataset = f'{output_folder}\\{output_raster}',
+            arcpy.management.CopyRaster(in_raster         = f'{input_folder}/{input_raster}',
+                                        out_rasterdataset = f'{output_folder}/{output_raster}',
                                         background_value  = 0,
                                         nodata_value      = 127,
                                         pixel_type        = '8_BIT_SIGNED',

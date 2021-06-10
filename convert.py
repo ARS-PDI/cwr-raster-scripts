@@ -1,4 +1,4 @@
-# Converts GeoTIFF raster datasets in a folder to MRF format
+# Converts GeoTIFF raster datasets in an folder to MRF format to an output
 # @author Josh Birlingmair
 
 import os
@@ -20,10 +20,15 @@ if __name__ == "__main__":
             output_raster = file.replace('.tif', '.mrf')
 
             print(f'Converting {input_raster} to {output_raster}')
-            arcpy.management.CopyRaster(in_raster=f'{input_folder}\\{input_raster}',
-                                        out_rasterdataset=f'{output_folder}\\{output_raster}',
-                                        background_value=0,
-                                        nodata_value=127,
-                                        pixel_type='8_BIT_SIGNED',
-                                        format='MRF',
-                                        transform='NONE')
+            arcpy.management.CopyRaster(in_raster         = f'{input_folder}\\{input_raster}',
+                                        out_rasterdataset = f'{output_folder}\\{output_raster}',
+                                        background_value  = 0,
+                                        nodata_value      = 127,
+                                        pixel_type        = '8_BIT_SIGNED',
+                                        format            = 'MRF',
+                                        transform         = 'NONE')
+
+        # Clean up unneeded XML files
+        for file in os.listdir(output_folder):
+            if file.endswith('mrf.aux.xml') or file.endswith('.mrf.xml'):
+                os.remove(f'{output_folder}\\{file}')

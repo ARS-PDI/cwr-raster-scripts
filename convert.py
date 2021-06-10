@@ -31,8 +31,3 @@ if __name__ == "__main__":
                                         pixel_type        = '8_BIT_SIGNED',
                                         format            = 'MRF',
                                         transform         = 'NONE')
-
-        # Clean up unneeded XML files
-        for file in os.listdir(output_folder):
-            if file.endswith('mrf.aux.xml') or file.endswith('.mrf.xml'):
-                os.remove(f'{output_folder}\\{file}')

@@ -18,9 +18,12 @@ if __name__ == "__main__":
         for subfolder in os.listdir(f'{input_folder}/{folder}'):
             for file in os.listdir(f'{input_folder}/{folder}/{subfolder}'):
                 if file.endswith('.tif'):
-                    if file.replace('.tif', '.mrf') not in os.listdir(f'{input_folder}/{folder}/{subfolder}'):
+                    if file.replace('.tif', '.mrf.aux.xml') not in os.listdir(f'{output_folder}/{folder}/{subfolder}'):
                         no_match.append(f'{folder}/{subfolder}/{file}')
 
-    print('The following rasters do not have no match:')
-    for raster in no_match:
-        print(raster)
+    if no_match:
+        print('The following rasters do not have no match:')
+        for raster in no_match:
+            print(raster)
+    else:
+        print('All TIFs have a matching MRF')

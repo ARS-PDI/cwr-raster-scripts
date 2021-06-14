@@ -45,7 +45,7 @@ if __name__ == "__main__":
                                                     format            = 'MRF',
                                                     transform         = 'NONE')
                     except:
-                        print(f'Failed to convert {input_raster}. Skipping to next')
+                        print(f'Failed to convert {input_raster}. Skipping raster')
                         failed.append(f'{folder}/{subfolder}/{input_raster}')
                         continue
 
@@ -53,4 +53,4 @@ if __name__ == "__main__":
     for raster in failed:
         print(f'\t', raster)
 
-    print('Done')
+    print('Finished converting')

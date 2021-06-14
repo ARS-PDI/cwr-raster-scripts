@@ -17,3 +17,5 @@ if __name__ == "__main__":
                 if file.endswith('.mrf.xml'):
                     print(f'Removing {root_dir}/{folder}/{subfolder}/{file}')
                     os.remove(f'{root_dir}/{folder}/{subfolder}/{file}')
+
+    print('Finished cleaning up metadata files')

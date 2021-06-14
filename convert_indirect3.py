@@ -42,16 +42,15 @@ if __name__ == "__main__":
                                                     out_rasterdataset = f'{output_folder}/{folder}/{subfolder}/{output_raster}',
                                                     background_value  = 0,
                                                     nodata_value      = 127,
-                                                    pixel_type        = '32_BIT_FLOAT',
                                                     format            = 'MRF',
                                                     transform         = 'NONE')
                     except:
-                        print(f'Failed to convert {input_raster}. Skipping to next')
+                        print(f'Failed to convert {input_raster}. Skipping raster')
                         failed.append(f'{folder}/{subfolder}/{input_raster}')
                         continue
 
-    print('The following rasters could not be converted:')
-    for raster in failed:
-        print(f'\t', raster)
+    # print('The following rasters could not be converted:')
+    # for raster in failed:
+    #     print(f'\t', raster)
 
-print('Done')
+print('Finished converting')

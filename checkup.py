@@ -9,7 +9,7 @@ if __name__ == "__main__":
         input_folder  = sys.argv[1]
         output_folder = sys.argv[2]
     else:
-        print('Usage: python3 doublecheck.py "C:/Users/.../Input Folder" "C:/Users/.../Output Folder"')
+        print('Usage: python3 checkup.py "C:/Users/.../Input Folder" "C:/Users/.../Output Folder"')
         exit(1)
 
     no_match = []

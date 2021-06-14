@@ -23,11 +23,14 @@ if __name__ == "__main__":
             output_raster = file.replace('.tif', '.mrf')
 
             print(f'Converting {input_raster} to {output_raster}')
-            arcpy.management.CopyRaster(in_raster         = f'{input_folder}/{input_raster}',
-                                        out_rasterdataset = f'{output_folder}/{output_raster}',
-                                        background_value  = 0,
-                                        nodata_value      = 127,
-                                        format            = 'MRF',
-                                        transform         = 'NONE')
+            try:
+                arcpy.management.CopyRaster(in_raster         = f'{input_folder}/{input_raster}',
+                                            out_rasterdataset = f'{output_folder}/{output_raster}',
+                                            background_value  = 0,
+                                            nodata_value      = 127,
+                                            format            = 'MRF',
+                                            transform         = 'NONE')
+            except:
+                print('Failed to convert raster. Skipping')
 
-    print('Done')
+    print('Finished converting')

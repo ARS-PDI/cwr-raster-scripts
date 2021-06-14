@@ -49,8 +49,8 @@ if __name__ == "__main__":
                         failed.append(f'{folder}/{subfolder}/{input_raster}')
                         continue
 
-    # print('The following rasters could not be converted:')
-    # for raster in failed:
-    #     print(f'\t', raster)
+    print('The following rasters could not be converted:')
+    for raster in failed:
+        print(f'\t', raster)    
 
-print('Finished converting')
+    print('Finished converting')

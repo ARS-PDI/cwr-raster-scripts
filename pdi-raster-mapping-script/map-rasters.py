@@ -2,6 +2,7 @@ import sys
 import arcpy
 from os import path
 import arcgis
+from numpy import append
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
@@ -30,9 +31,15 @@ if __name__ == '__main__':
     arcpy.AddRastersToMosaicDataset_management(dataset_path, 'Raster Dataset', input_path)
 
     # TODO: Raster -> Remap
-    curr_rast = path.join(arcpy.env.workspace, test_mosaic)
-    input_ranges = [1, 10, 20]
-    output_ranges = [10, 20, 30]
-    arcgis.raster.functions.remap(test_mosaic, input_ranges, output_ranges)
+    curr_rast = arcgis.raster.Raster(path.join(arcpy.env.workspace, test_mosaic)) # FIXME
+
+    input_ranges = []
+    for i in range(-4500, 5000, 500):
+        input_ranges.append(i)
+        input_ranges.append(i + 500)
+        
+    output_ranges = list(range(1, 20))
+
+    arcgis.raster.functions.remap(curr_rast, input_ranges, output_ranges)
 
     # TODO: Remap -> Attribute table (Page 8)

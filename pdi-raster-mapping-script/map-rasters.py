@@ -10,6 +10,8 @@ if __name__ == '__main__':
     workspace = sys.argv[1]
     mrf_folder = sys.argv[2]
     test_mosaic = 'test_mosaic'
+    test_raster = 'grs_pa_PAs_narea_areakm2.mrf'
+    test_function = 'test_function.rft.xml'
     fgdb = 'workspace.gdb'
 
     # Create new file Geodatabase in project
@@ -25,15 +27,9 @@ if __name__ == '__main__':
     input_path = path.join(workspace, mrf_folder)
     arcpy.AddRastersToMosaicDataset_management(dataset_path, 'Raster Dataset', input_path)
 
-    # Raster -> Remap
-    input_ranges = []
-    for i in range(-4500, 5000, 500):
-        input_ranges.append(i)
-        input_ranges.append(i + 500)
-        
-    output_ranges = list(range(1, 20))
-    curr_rast = path.join(arcpy.env.workspace, test_mosaic)
-    new_rast = arcpy.sa.Remap(curr_rast, input_ranges, output_ranges)
-    new_rast.save(path.join(workspace, 'test_mosaic_output'))
-
-    # TODO: Remap -> Attribute table (Page 8)
+    # Generate new raster from custom raster function
+    arcpy.GenerateRasterFromRasterFunction_management(
+        path.join(workspace, test_function),
+        path.join(workspace, test_raster),
+        'Raster ' + path.join(input_path, test_raster),
+        format='MRF')

@@ -4,22 +4,24 @@
 import os
 import sys
 
+def checkup(input_dir, output_dir, no_match):
+    for file in os.listdir(input_dir):
+        if file.endswith('.tif'):
+            if file.replace('.tif', '.mrf.aux.xml') not in os.listdir(output_dir):
+                no_match.append(f'{input_dir}/{file}')
+        elif os.path.isdir(f'{input_dir}/{file}'):
+            checkup(f'{input_dir}/{file}', f'{output_dir}/{file}', no_match)
+
 if __name__ == "__main__":
     if len(sys.argv) == 3:
-        input_folder  = sys.argv[1]
-        output_folder = sys.argv[2]
+        input_dir  = sys.argv[1]
+        output_dir = sys.argv[2]
     else:
-        print('Usage: python3 checkup.py "C:/Users/.../Input Folder" "C:/Users/.../Output Folder"')
+        print('Usage: python3 checkup.py [input folder] [output_folder]')
         exit(1)
 
     no_match = []
-
-    for folder in os.listdir(input_folder):
-        for subfolder in os.listdir(f'{input_folder}/{folder}'):
-            for file in os.listdir(f'{input_folder}/{folder}/{subfolder}'):
-                if file.endswith('.tif'):
-                    if file.replace('.tif', '.mrf.aux.xml') not in os.listdir(f'{output_folder}/{folder}/{subfolder}'):
-                        no_match.append(f'{folder}/{subfolder}/{file}')
+    checkup(input_dir, output_dir, no_match)
 
     if no_match:
         print('The following rasters do not have no match:')

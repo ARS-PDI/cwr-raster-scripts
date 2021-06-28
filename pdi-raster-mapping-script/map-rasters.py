@@ -1,8 +1,6 @@
 import sys
 import arcpy
 from os import path
-import arcgis
-from numpy import append
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
@@ -14,32 +12,28 @@ if __name__ == '__main__':
     test_mosaic = 'test_mosaic'
     fgdb = 'workspace.gdb'
 
-    # TODO?: Add/access cloud storage connection
-
     # Create new file Geodatabase in project
     arcpy.CreateFileGDB_management(workspace, fgdb)
 
     # Create new mosaic dataset in file Geodatabase
-    # - WGS_1984_UTM_Zone_14N coordinate system
     arcpy.env.workspace = path.join(workspace, fgdb)
     coord_sys = arcpy.SpatialReference('WGS 1984 UTM Zone 14N')
     arcpy.CreateMosaicDataset_management(arcpy.env.workspace, test_mosaic, coord_sys, 1)
 
     # Add raster file to dataset
     dataset_path = path.join(arcpy.env.workspace, test_mosaic)
-    input_path = path.join(workspace, mrf_folder) # FIXME
+    input_path = path.join(workspace, mrf_folder)
     arcpy.AddRastersToMosaicDataset_management(dataset_path, 'Raster Dataset', input_path)
 
-    # TODO: Raster -> Remap
-    curr_rast = arcgis.raster.Raster(path.join(arcpy.env.workspace, test_mosaic)) # FIXME
-
+    # Raster -> Remap
     input_ranges = []
     for i in range(-4500, 5000, 500):
         input_ranges.append(i)
         input_ranges.append(i + 500)
         
     output_ranges = list(range(1, 20))
-
-    arcgis.raster.functions.remap(curr_rast, input_ranges, output_ranges)
+    curr_rast = path.join(arcpy.env.workspace, test_mosaic)
+    new_rast = arcpy.sa.Remap(curr_rast, input_ranges, output_ranges)
+    new_rast.save(path.join(workspace, 'test_mosaic_output'))
 
     # TODO: Remap -> Attribute table (Page 8)

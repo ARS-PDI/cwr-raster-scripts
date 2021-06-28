@@ -20,11 +20,12 @@ def convert_raster(input_dir, output_dir):
                                             transform         = 'NONE')
             except KeyboardInterrupt:
                 exit()
-            except:
-                print('Failed to convert raster. Skipping')
-                continue
         elif os.path.isdir(f'{input_dir}/{file}'):
-            os.mkdir(f'{output_dir}/{file}')
+            try:
+                os.mkdir(f'{output_dir}/{file}')
+            except FileExistsError:
+                continue
+
             convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}')
     
 if __name__ == "__main__":

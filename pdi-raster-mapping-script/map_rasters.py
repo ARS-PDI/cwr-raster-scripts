@@ -12,23 +12,26 @@ def map_rasters(input_dir, workspace, rast_func, fgdb):
         elif file.endswith('.mrf'):
             # Create new mosaic dataset in file Geodatabase
             mosaic = file.replace('.mrf', '')
-            arcpy.CreateMosaicDataset_management(os.path.join(arcpy.env.workspace,
-                                                              fgdb),
-                                                 mosaic,
-                                                 coord_sys,
-                                                 1)
+            arcpy.CreateMosaicDataset_management(
+                    os.path.join(arcpy.env.workspace, fgdb),        # Path to new mosaic
+                    mosaic,                                         # Mosaic name
+                    coord_sys,                                      # Coordinate system
+                    1)                                              # No. of bands
 
             # Generate new raster from custom raster function
             arcpy.GenerateRasterFromRasterFunction_management(
-                os.path.join(os.getcwd(), rast_func),
-                os.path.join(arcpy.env.workspace, fgdb, file),
-                'Raster ' + os.path.join(input_dir, file),
-                format='MRF')
+                    os.path.join(os.getcwd(), rast_func),           # Raster function dir/name
+                    os.path.join(arcpy.env.workspace, fgdb, file),  # Output raster dir/name
+                    'Raster ' + os.path.join(input_dir, file),      # Raster function args
+                    format='MRF')
 
             # Add raster file to dataset
             dataset_path = os.path.join(arcpy.env.workspace, fgdb, mosaic)
             raster = os.path.join(os.path.join(input_dir, file))
-            arcpy.AddRastersToMosaicDataset_management(dataset_path, 'Raster Dataset', raster)
+            arcpy.AddRastersToMosaicDataset_management(
+                os.path.join(arcpy.env.workspace, fgdb, mosaic),    # Dataset path
+                'Raster Dataset',                                   # Input raster type
+                os.path.join(os.path.join(input_dir, file)))        # Raster dir/name
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
@@ -46,6 +49,7 @@ if __name__ == '__main__':
         pass
 
     coord_sys = arcpy.SpatialReference('WGS 1984 UTM Zone 14N')
+    arcpy.env.workspace = os.getcwd()
 
     # Map rasters using custom raster function file and put them into file geodatabase
-    map_rasters(root_dir, arcpy.env.workspace, rast_func)
+    map_rasters(root_dir, arcpy.env.workspace, rast_func, fgdb)

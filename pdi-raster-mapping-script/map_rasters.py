@@ -10,25 +10,22 @@ def map_rasters(input_dir, workspace, rast_func, fgdb):
         if os.path.isdir(os.path.join(input_dir, file)):
             map_rasters(os.path.join(input_dir, file), workspace, rast_func, fgdb)
         elif file.endswith('.mrf'):
-            # Create new mosaic dataset in file Geodatabase
+            input_rast_path = os.path.join(input_dir, file)
             mosaic = file.replace('.mrf', '')
-            arcpy.CreateMosaicDataset_management(
-                    os.path.join(arcpy.env.workspace, fgdb),         # Path to new mosaic
-                    mosaic,                                          # Mosaic name
-                    arcpy.SpatialReference('WGS 1984 UTM Zone 14N'), # Coordinate system
-                    1)                                               # No. of bands
+            mosaic_path = os.path.join(arcpy.env.workspace, fgdb, mosaic)
 
-            # Add raster file to dataset
-            arcpy.AddRastersToMosaicDataset_management(
-                os.path.join(arcpy.env.workspace, fgdb, mosaic),     # Dataset path
-                'Raster Dataset',                                    # Input raster type
-                os.path.join(os.path.join(input_dir, file)))         # Raster dir/name
+            # Create new mosaic dataset in file Geodatabase
+            arcpy.CreateMosaicDataset_management(
+                    os.path.join(arcpy.env.workspace, fgdb),          # Path to new mosaic
+                    mosaic,                                           # Mosaic name
+                    arcpy.SpatialReference('WGS 1984 UTM Zone 14N'),  # Coordinate system
+                    1)                                                # No. of bands
 
             # Generate new raster from custom raster function
             arcpy.GenerateRasterFromRasterFunction_management(
-                    os.path.join(os.getcwd(), rast_func),            # Raster function dir/name
-                    os.path.join(arcpy.env.workspace, fgdb, mosaic), # Output raster dir/name
-                    'Raster ' + os.path.join(input_dir, file),       # Raster function args
+                    rast_func,                                        # Raster function dir/name
+                    mosaic_path,                                      # Output raster dir/name
+                    'Raster ' + input_rast_path,                      # Raster function args
                     format='MRF')
 
 if __name__ == '__main__':

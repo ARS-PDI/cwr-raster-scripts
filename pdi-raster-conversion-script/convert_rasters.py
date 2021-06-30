@@ -7,6 +7,8 @@ import arcpy
 # Recursive function that converts all raster datasets under an input directory
 # into an output folder
 def convert_raster(input_dir, output_dir):
+    nodata_val = -32768     # 16-bit signed minimum
+
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
             output_rast = file.replace('.tif', '.mrf')
@@ -15,12 +17,15 @@ def convert_raster(input_dir, output_dir):
             try:
                 arcpy.CopyRaster_management(in_raster         = f'{input_dir}/{file}',
                                             out_rasterdataset = f'{output_dir}/{output_rast}',
-                                            background_value  = 0,
-                                            nodata_value      = 127,
+                                            background_value  = nodata_val,
+                                            nodata_value      = nodata_val,
+                                            pixel_type        = '16_BIT_SIGNED',
                                             format            = 'MRF',
                                             transform         = 'NONE')
             except KeyboardInterrupt:
                 exit()
+            except:
+                pass
         elif os.path.isdir(f'{input_dir}/{file}'):
             try:
                 os.mkdir(f'{output_dir}/{file}')
@@ -73,5 +78,5 @@ if __name__ == "__main__":
     else:
         print('All TIFs have a matching MRF')
 
-    cleanup(input_dir)
+    cleanup(output_dir)
     print('Finished cleaning up metadata files')

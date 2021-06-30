@@ -3,10 +3,7 @@ import sys
 import arcpy
 
 def map_rasters(input_dir, workspace, rast_func, fgdb):
-    # arg 1: Input directory w/ MRFs -- input_dir
     for file in os.listdir(input_dir):
-        arcpy.env.workspace = workspace
-
         if os.path.isdir(os.path.join(input_dir, file)):
             map_rasters(os.path.join(input_dir, file), workspace, rast_func, fgdb)
         elif file.endswith('.mrf'):
@@ -16,17 +13,28 @@ def map_rasters(input_dir, workspace, rast_func, fgdb):
 
             # Create new mosaic dataset in file Geodatabase
             arcpy.CreateMosaicDataset_management(
-                    os.path.join(arcpy.env.workspace, fgdb),          # Path to new mosaic
-                    mosaic,                                           # Mosaic name
-                    arcpy.SpatialReference('WGS 1984 UTM Zone 14N'),  # Coordinate system
-                    1)                                                # No. of bands
+                os.path.join(arcpy.env.workspace, fgdb),          # Path to new mosaic
+                mosaic,                                           # Mosaic name
+                arcpy.SpatialReference('WGS 1984 UTM Zone 14N')   # Coordinate system
+            )
 
-            # Generate new raster from custom raster function
-            arcpy.GenerateRasterFromRasterFunction_management(
-                    rast_func,                                        # Raster function dir/name
-                    mosaic_path,                                      # Output raster dir/name
-                    'Raster ' + input_rast_path,                      # Raster function args
-                    format='MRF')
+            try:
+                os.mkdir(os.path.join(workspace, 'output'))
+            except FileExistsError:
+                pass
+
+            arcpy.AddRastersToMosaicDataset_management(
+                mosaic_path,                                      # Target mosaic dataset
+                'Raster Dataset',                                 # Raster type
+                input_rast_path                                   # Path to input raster
+            )
+
+            rast_func_path = os.path.join(workspace, rast_func)
+            arcpy.SetMosaicDatasetProperties_management(
+                mosaic_path,                                      # Target mosaic dataset
+                processing_templates=rast_func_path,              # Processing templates
+                default_processing_template=rast_func_path        # Default template
+            )
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:

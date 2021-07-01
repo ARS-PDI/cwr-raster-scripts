@@ -32,7 +32,7 @@ def convert_raster(input_dir, output_dir, nodata_val, pixel_t):
             except FileExistsError:
                 pass
 
-            convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}', nodata_val)
+            convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}', nodata_val, pixel_t)
 
 def checkup(input_dir, output_dir, no_match):
     """

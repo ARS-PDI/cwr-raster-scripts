@@ -6,9 +6,7 @@ import arcpy
 
 # Recursive function that converts all raster datasets under an input directory
 # into an output folder
-def convert_raster(input_dir, output_dir):
-    nodata_val = -32768     # 16-bit signed minimum
-
+def convert_raster(input_dir, output_dir, nodata_val):
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
             output_rast = file.replace('.tif', '.mrf')
@@ -19,7 +17,7 @@ def convert_raster(input_dir, output_dir):
                                             out_rasterdataset = f'{output_dir}/{output_rast}',
                                             background_value  = nodata_val,
                                             nodata_value      = nodata_val,
-                                            pixel_type        = '16_BIT_SIGNED',
+                                            pixel_type        = '32_BIT_SIGNED',
                                             format            = 'MRF',
                                             transform         = 'NONE')
             except KeyboardInterrupt:
@@ -30,7 +28,7 @@ def convert_raster(input_dir, output_dir):
             try:
                 os.mkdir(f'{output_dir}/{file}')
             except FileExistsError:
-                continue
+                pass
 
             convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}')
 
@@ -52,20 +50,26 @@ def cleanup(input_dir):
             os.remove(f'{input_dir}/{file}')
         elif os.path.isdir(f'{input_dir}/{file}'):
             cleanup(f'{input_dir}/{file}')
+
+def raise_os_error():
+    raise OSError('Usage: python3 convert_rasters.py [input folder] [output folder]')
     
 if __name__ == "__main__":
-    if len(sys.argv) == 3:
-        input_dir  = sys.argv[1]
-        output_dir = sys.argv[2]
-    else:
-        print('Usage: python3 convert_rasters.py [input folder] [output folder]')
-        exit()
+    if len(sys.argv) != 3:
+        raise_os_error()
 
+    input_dir  = sys.argv[1]
+    output_dir = sys.argv[2]
+
+    if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
+        raise_os_error()
+    
     arcpy.env.compression            = 'LERC 0'
     arcpy.env.outputCoordinateSystem = arcpy.SpatialReference('WGS 1984 UTM Zone 14N')
     arcpy.env.rasterStatistics       = 'STATISTICS 1 1'
 
-    convert_raster(input_dir, output_dir)
+    nodata_val = -2147483648     # 32-bit signed minimum
+    convert_raster(input_dir, output_dir, nodata_val)
     print('Finished converting')
 
     no_match = []

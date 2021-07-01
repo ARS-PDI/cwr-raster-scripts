@@ -30,7 +30,7 @@ def convert_raster(input_dir, output_dir, nodata_val):
             except FileExistsError:
                 pass
 
-            convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}')
+            convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}', nodata_val)
 
 # Double checks that for every TIF there is a corresponding MRF in all the root
 # directory's subdirectories

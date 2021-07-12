@@ -3,15 +3,21 @@ import sys
 import arcpy
 
 def stdize(string):
-    return string.replace(' ', '_').replace('-', '_').replace('.', '')
+    string = string.replace(' ', '_')
+    string = string.replace('-', '_')
+    string = string.replace('.', '')
+    string = string.replace('(', '')
+    string = string.replace(')', '')
+
+    return string
 
 def map_rasters(input_dir, workspace, rast_func, fgdb):
     fgdb_path = os.path.join(workspace, 'GDB', fgdb)
 
     for file in os.listdir(input_dir):
         if os.path.isdir(os.path.join(input_dir, file)):
-            for mem in os.listdir(os.path.join(input_dir, file)):
-                if '.mrf' in mem:
+            for f in os.listdir(os.path.join(input_dir, file)):
+                if '.mrf' in f:
                     fgdb = stdize(file)
                     fgdb = fgdb + '.gdb'
                     

@@ -2,13 +2,12 @@ import os
 import sys
 import arcpy
 
-def publish_layers(workspace, ags):
+def publish_layers(workspace):
     """
     workspace: Folder containg GDB(s)
-    ags:       Path to server connection file
     """
     for gdb in os.listdir(workspace):
-        gdb_path = os.path.join(workspace, gdb) #File geodatabase used to store a mosaic dataset
+        arcpy.env.workspace = gdb_path = os.path.join(workspace, gdb)
 
         for mos in arcpy.ListDatasets(feature_type='Mosaic'):
             sd_draft = os.path.join(workspace, mos + '.sddraft')
@@ -19,38 +18,26 @@ def publish_layers(workspace, ags):
                     os.path.join(gdb_path, mos),
                     sd_draft,
                     mos,
-                    'FROM_CONNECTION_FILE',
-                    ags,
-                    'AgCROS',
-                    mos,
-                    'ARS'
+                    'ARCGIS_SERVER',
+                    folder_name='AgCROS',
+                    summary=mos,
+                    tags='ARS'
                 )
             except:
-                print('Failed in creating sd draft')
-                exit()
+                exit(arcpy.GetMessages())
 
-            # Analyze the service definition draft
-            analysis = arcpy.mapping.AnalyzeForSD(sd_draft)
-            print(analysis['messages'])
-            print(analysis['warnings'])
-            print(analysis['errors'])
-
-            # Stage and upload the service if the sd_draft analysis did not contain errors
-            if not analysis['errors']:
-                print('Staging service to create service definition')
+            print('Staging service to create service definition')
+            try:
                 arcpy.StageService_server(sd_draft, sd)
-                
-                try:
-                    print('Uploading the service definition and publishing image service')
-                    arcpy.UploadServiceDefinition_server(sd, ags)
-
-                    print('Service successfully published')
-                except:
-                    print('Failed to stage and upload service')
-                    exit()
-            else:
-                print('Service could not be published because errors were found during analysis.')
+            except:
                 print(arcpy.GetMessages())
+            
+            try:
+                print('Uploading the service definition and publishing image service')
+                arcpy.UploadServiceDefinition_server(sd, 'HOSTING_SERVER')
+                print('Service successfully published')
+            except:
+                exit(arcpy.GetMessages())
 
 if __name__ == '__main__':
     arcpy.SignInToPortal(
@@ -59,6 +46,6 @@ if __name__ == '__main__':
         os.environ.get('AG_PASSWD')
     )
 
-    workspace = sys.argv[0]
-    ags = sys.argv[1]
-    publish_layers(workspace, ags)
+    workspace = sys.argv[1]
+
+    publish_layers(workspace)

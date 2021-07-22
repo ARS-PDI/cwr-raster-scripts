@@ -1,4 +1,5 @@
 .vscode
+*.sd*
 *.gdb
 test*
 *.rft.xml

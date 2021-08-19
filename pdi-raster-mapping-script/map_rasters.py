@@ -3,6 +3,7 @@ import sys
 import arcpy
 
 def stdize(string):
+    # string = string.replace('__', '_')
     string = string.replace(' ', '_')
     string = string.replace('-', '_')
     string = string.replace('.', '')
@@ -11,7 +12,7 @@ def stdize(string):
 
     return string
 
-def map_rasters(input_dir, workspace, rast_func, fgdb):
+def map_rasters(input_dir, workspace, rast_funcs, fgdb):
     fgdb_path = os.path.join(workspace, 'GDB', fgdb)
 
     for file in os.listdir(input_dir):
@@ -28,13 +29,27 @@ def map_rasters(input_dir, workspace, rast_func, fgdb):
 
                     break
 
-            map_rasters(os.path.join(input_dir, file), workspace, rast_func, fgdb)
+            map_rasters(os.path.join(input_dir, file), workspace, rast_funcs, fgdb)
         elif file.endswith('.mrf'):
             input_rast_path = os.path.join(input_dir, file)
             print('Processing', input_rast_path)
 
             mosaic = file.replace('.mrf', '')
             mosaic = stdize(mosaic)
+
+            # Figure out raster function
+            rast_func = None
+            if 'ga50' in file:
+                rast_func = rast_funcs['ga50']
+            elif 'grsEx' in file:
+                rast_func = rast_funcs['grsEx']
+            elif 'grsIn__proAreas' in file:
+                rast_func = rast_funcs['grsIn_proAreas']
+            elif 'thrsld_median' in file:
+                rast_func = rast_funcs['thrsld_median']
+
+            if not rast_func:
+                continue
 
             # Create new mosaic dataset in file Geodatabase
             arcpy.CreateMosaicDataset_management(
@@ -63,7 +78,13 @@ if __name__ == '__main__':
         exit()
 
     root_dir = sys.argv[1]
-    rast_func = sys.argv[2]
+    templates_dir = sys.argv[2]
+    rast_funcs = {
+        'ga50': os.path.join(templates_dir, 'ga50.rft.xml'),
+        'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),
+        'grsIn_proAreas': os.path.join(templates_dir, 'grsIn_proAreas.rft.xml'),
+        'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml')
+    }
 
     # Set environment variables
     arcpy.env.workspace = os.getcwd()
@@ -76,4 +97,4 @@ if __name__ == '__main__':
         pass
 
     # Map rasters using custom raster function file and put them into file geodatabase
-    map_rasters(root_dir, arcpy.env.workspace, rast_func, 'default.gdb')
+    map_rasters(root_dir, arcpy.env.workspace, rast_funcs, 'default.gdb')

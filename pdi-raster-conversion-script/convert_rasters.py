@@ -14,13 +14,15 @@ def convert_raster(input_dir, output_dir):
 
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
-            if '_median' in file or 'narea_areakm2' in file:
+            if '__thrsld' in file or 'narea_areakm2' in file:
                 continue
 
             output_rast = file.replace('.tif', '.mrf')
             
             if 'ga50' in file:
                 output_rast = f'{os.path.basename(input_dir)}_ga50.mrf'
+            elif '_median' in file:
+                output_rast = f'{os.path.basename(input_dir)}_spdist_thrsld_median.mrf'
 
             print(f'Converting {input_dir}/{file}')
             try:
@@ -55,10 +57,13 @@ def checkup(input_dir, output_dir, no_match):
     directory's subdirectories
     """
     for file in os.listdir(input_dir):
-        if '_median' in file or 'narea_areakm2' in file:
+        if '__thrsld' in file or 'narea_areakm2' in file:
             continue
         elif 'ga50' in file:
             file = file.replace('ga50', f'{os.path.basename(input_dir)}_ga50')
+        elif '_median' in file:
+            file = file.replace('spdist_thrsld_median',
+                                f'{os.path.basename(input_dir)}_spdist_thrsld_median')
         
         if file.endswith('.tif'):
             if file.replace('.tif', '.mrf.aux.xml') not in os.listdir(output_dir):
@@ -73,8 +78,6 @@ def cleanup(input_dir):
     """
     for file in os.listdir(input_dir):
         if file.endswith('.mrf.xml'):
-            os.remove(f'{input_dir}/{file}')
-        elif '_median' in file:
             os.remove(f'{input_dir}/{file}')
         elif os.path.isdir(f'{input_dir}/{file}'):
             cleanup(f'{input_dir}/{file}')

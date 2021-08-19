@@ -2,15 +2,15 @@ import os
 import sys
 import arcpy
 
-def stdize(string):
-    # string = string.replace('__', '_')
-    string = string.replace(' ', '_')
-    string = string.replace('-', '_')
-    string = string.replace('.', '')
-    string = string.replace('(', '')
-    string = string.replace(')', '')
+def stdize(s):
+    s = s.replace('__', '_')
+    s = s.replace(' ', '_')
+    s = s.replace('-', '_')
+    s = s.replace('.', '')
+    s = s.replace('(', '')
+    s = s.replace(')', '')
 
-    return string
+    return s
 
 def map_rasters(input_dir, workspace, rast_funcs, fgdb):
     fgdb_path = os.path.join(workspace, 'GDB', fgdb)
@@ -43,7 +43,7 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
                 rast_func = rast_funcs['ga50']
             elif 'grsEx' in file:
                 rast_func = rast_funcs['grsEx']
-            elif 'grsIn__proAreas' in file:
+            elif 'grsIn_proAreas' in file:
                 rast_func = rast_funcs['grsIn_proAreas']
             elif 'thrsld_median' in file:
                 rast_func = rast_funcs['thrsld_median']
@@ -74,8 +74,7 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print('Usage: python3 map_rasters.py [root folder] [raster function file]')
-        exit()
+        exit('Usage: python3 map_rasters.py [root folder] [raster function file]')
 
     root_dir = sys.argv[1]
     templates_dir = sys.argv[2]

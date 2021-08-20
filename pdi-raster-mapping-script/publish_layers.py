@@ -19,9 +19,10 @@ def publish_layers(workspace):
                     sd_draft,
                     mos,
                     'ARCGIS_SERVER',
-                    folder_name='AgCROS',
+                    copy_data_to_server=True,
+                    folder_name='CWR',
                     summary=mos,
-                    tags='ARS'
+                    tags='ARS, CWR'
                 )
             except:
                 exit(arcpy.GetMessages())
@@ -34,14 +35,19 @@ def publish_layers(workspace):
             
             try:
                 print('Uploading the service definition and publishing image service')
-                arcpy.UploadServiceDefinition_server(sd, 'HOSTING_SERVER')
+                arcpy.UploadServiceDefinition_server(
+                    sd,
+                    'https://pdiimagery.azurecloudgov.us/arcgis',
+                    in_public=True,
+                    in_organization='SHARE_ORGANIZATION'
+                )
                 print('Service successfully published')
             except:
                 exit(arcpy.GetMessages())
 
 if __name__ == '__main__':
     arcpy.SignInToPortal(
-        "https://usdaars.maps.arcgis.com",
+        "https://pdienterprise.azurecloudgov.us/portal",
         os.environ.get('AG_USERNM'),
         os.environ.get('AG_PASSWD')
     )

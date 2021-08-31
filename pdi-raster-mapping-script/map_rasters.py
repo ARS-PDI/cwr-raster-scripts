@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import arcpy
 
 def stdize(s):
@@ -21,18 +22,20 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
                 if '.mrf' in f:
                     fgdb = stdize(file)
                     fgdb = fgdb + '.gdb'
-                    
-                    arcpy.CreateFileGDB_management(
-                        os.path.join(workspace, 'GDB'),
-                        fgdb
-                    )
+
+                    if not os.path.exists(os.path.join(workspace, 'GDB', fgdb)):
+                        arcpy.CreateFileGDB_management(
+                            os.path.join(workspace, 'GDB'),
+                            fgdb
+                        )
 
                     break
 
             map_rasters(os.path.join(input_dir, file), workspace, rast_funcs, fgdb)
         elif file.endswith('.mrf'):
             input_rast_path = os.path.join(input_dir, file)
-            print('Processing', input_rast_path)
+            local_time = time.localtime()
+            print(time.strftime('[%I:%M:%S]', local_time), input_rast_path)
 
             mosaic = file.replace('.mrf', '')
             mosaic = stdize(mosaic)
@@ -74,7 +77,7 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        exit('Usage: python3 map_rasters.py [root folder] [raster function file]')
+        exit('Usage: python3 map_rasters.py [root folder] [raster function folder]')
 
     root_dir = sys.argv[1]
     templates_dir = sys.argv[2]

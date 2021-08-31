@@ -24,30 +24,29 @@ def publish_layers(workspace):
                     summary=mos,
                     tags='ARS, CWR'
                 )
-            except:
-                exit(arcpy.GetMessages())
 
-            print('Staging service to create service definition')
-            try:
                 arcpy.StageService_server(sd_draft, sd)
-            except:
-                print(arcpy.GetMessages())
-            
-            try:
-                print('Uploading the service definition and publishing image service')
+
+                print('Uploading the service definition for', mos)
                 arcpy.UploadServiceDefinition_server(
                     sd,
                     'https://pdiimagery.azurecloudgov.us/arcgis',
+                    in_my_contents=True,
                     in_public=True,
                     in_organization='SHARE_ORGANIZATION'
                 )
                 print('Service successfully published')
             except:
-                exit(arcpy.GetMessages())
+                with open('publish_log.txt', 'a') as f:
+                    f.write(f'{mos}\n')
+            finally:
+                # Clean up service definitions
+                os.remove(os.path.join(workspace, f'{mos}.sddraft'))
+                os.remove(os.path.join(workspace, f'{mos}.sd'))
 
 if __name__ == '__main__':
     arcpy.SignInToPortal(
-        "https://pdienterprise.azurecloudgov.us/portal",
+        'https://pdienterprise.azurecloudgov.us/portal',
         os.environ.get('AG_USERNM'),
         os.environ.get('AG_PASSWD')
     )

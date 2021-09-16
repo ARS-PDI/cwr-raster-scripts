@@ -24,7 +24,7 @@ def convert_raster(input_dir, output_dir):
             elif '_median' in file:
                 output_rast = f'{os.path.basename(input_dir)}_spdist_thrsld_median.mrf'
 
-            print(f'Converting {input_dir}/{file}')
+            print('Converting', os.path.join(input_dir, file))
             try:
                 for cls in ['ersIn', 'ersIn_ecos', 'ersEx', 'ersEx_ecos']:
                     if cls in file:
@@ -32,24 +32,26 @@ def convert_raster(input_dir, output_dir):
                         nodata_val = 4294967295 # max unsigned 32-bit val
                         break
 
-                arcpy.CopyRaster_management(in_raster         = f'{input_dir}/{file}',
-                                            out_rasterdataset = f'{output_dir}/{output_rast}',
-                                            background_value  = nodata_val,
-                                            nodata_value      = nodata_val,
-                                            pixel_type        = pixel_t,
-                                            format            = 'MRF',
-                                            transform         = 'NONE')
+                arcpy.CopyRaster_management(
+                    in_raster=os.path.join(input_dir, file),
+                    out_rasterdataset=os.path.join(output_dir, output_rast),
+                    background_value=nodata_val,
+                    nodata_value=nodata_val,
+                    pixel_type=pixel_t,
+                    format='MRF',
+                    transform='NONE'
+                )
             except KeyboardInterrupt:
                 exit()
             except:
                 pass
-        elif os.path.isdir(f'{input_dir}/{file}'):
+        elif os.path.isdir(os.path.join(input_dir, file)):
             try:
-                os.mkdir(f'{output_dir}/{file}')
+                os.mkdir(os.path.join(output_dir, file))
             except FileExistsError:
                 pass
 
-            convert_raster(f'{input_dir}/{file}', f'{output_dir}/{file}')
+            convert_raster(os.path.join(input_dir, file), os.path.join(output_dir, file))
 
 def checkup(input_dir, output_dir, no_match):
     """
@@ -67,9 +69,9 @@ def checkup(input_dir, output_dir, no_match):
         
         if file.endswith('.tif'):
             if file.replace('.tif', '.mrf.aux.xml') not in os.listdir(output_dir):
-                no_match.append(f'{input_dir}/{file}')
-        elif os.path.isdir(f'{input_dir}/{file}'):
-            checkup(f'{input_dir}/{file}', f'{output_dir}/{file}', no_match)
+                no_match.append(os.path.join(input_dir, file))
+        elif os.path.isdir(os.path.join(input_dir, file)):
+            checkup(os.path.join(input_dir, file), os.path.join(output_dir, file), no_match)
 
 def cleanup(input_dir):
     """
@@ -78,9 +80,9 @@ def cleanup(input_dir):
     """
     for file in os.listdir(input_dir):
         if file.endswith('.mrf.xml'):
-            os.remove(f'{input_dir}/{file}')
-        elif os.path.isdir(f'{input_dir}/{file}'):
-            cleanup(f'{input_dir}/{file}')
+            os.remove(os.path.join(input_dir, file))
+        elif os.path.isdir(os.path.join(input_dir, file)):
+            cleanup(os.path.join(input_dir, file))
 
 def raise_os_error():
     raise OSError('Usage: python3 convert_rasters.py [input folder] [output folder]')

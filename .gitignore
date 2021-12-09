@@ -2,4 +2,4 @@
 *.sd*
 *.gdb
 test*
-*.rft.xml
+publish_log.txt

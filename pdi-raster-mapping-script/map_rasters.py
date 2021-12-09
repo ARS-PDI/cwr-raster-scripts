@@ -50,16 +50,23 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
                 rast_func = rast_funcs['grsIn_proAreas']
             elif 'thrsld_median' in file:
                 rast_func = rast_funcs['thrsld_median']
+            elif 'ecos' in file:
+                rast_func = rast_funcs['ecos']
 
             if not rast_func:
                 continue
 
             # Create new mosaic dataset in file Geodatabase
-            arcpy.CreateMosaicDataset_management(
-                fgdb_path,                                        # Path to new mosaic
-                mosaic,                                           # Mosaic name
-                arcpy.SpatialReference('WGS 1984')                # Coordinate system
-            )
+            try:
+                arcpy.CreateMosaicDataset_management(
+                    fgdb_path,                                    # Path to new mosaic
+                    mosaic,                                       # Mosaic name
+                    arcpy.SpatialReference('WGS 1984')            # Coordinate system
+                )
+            except KeyboardInterrupt:
+                exit(0)
+            except:
+                pass
 
             mosaic_path = os.path.join(fgdb_path, mosaic)
             arcpy.AddRastersToMosaicDataset_management(
@@ -85,12 +92,13 @@ if __name__ == '__main__':
         'ga50': os.path.join(templates_dir, 'ga50.rft.xml'),
         'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),
         'grsIn_proAreas': os.path.join(templates_dir, 'grsIn_proAreas.rft.xml'),
-        'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml')
+        'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml'),
+        'ecos': os.path.join(templates_dir, 'gap_ecoregions_north_central_america.rft.xml')
     }
 
     # Set environment variables
     arcpy.env.workspace = os.getcwd()
-    arcpy.env.overwriteOutput = True
+    arcpy.env.overwriteOutput = False
 
     # Create new file Geodatabase in current directory and set environment variables
     try:

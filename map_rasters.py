@@ -84,10 +84,10 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        exit('Usage: python3 map_rasters.py [root folder] [raster function folder]')
+        exit('Usage: python3 map_rasters.py [root folder]')
 
     root_dir = sys.argv[1]
-    templates_dir = sys.argv[2]
+    templates_dir = 'templates'
     rast_funcs = {
         'ga50': os.path.join(templates_dir, 'ga50.rft.xml'),
         'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),

@@ -80,6 +80,9 @@ def publish_layers(workspace):
             os.remove(os.path.join(workspace, f'{mos}.sd'))
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        exit('Usage: python3 publish_layers.py [GDBs folder]')
+
     arcpy.SignInToPortal(
         'https://pdienterprise.azurecloudgov.us/portal',
         os.environ.get('AG_USERNM'),

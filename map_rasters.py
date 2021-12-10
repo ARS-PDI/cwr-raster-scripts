@@ -93,7 +93,7 @@ if __name__ == '__main__':
         'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),
         'grsIn_proAreas': os.path.join(templates_dir, 'grsIn_proAreas.rft.xml'),
         'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml'),
-        'ecos': os.path.join(templates_dir, 'gap_ecoregions_north_central_america.rft.xml')
+        'ecos': os.path.join(templates_dir, 'ecos.rft.xml')
     }
 
     # Set environment variables

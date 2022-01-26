@@ -74,10 +74,13 @@ def publish_layers(workspace):
                 with open('publish_log.txt', 'a') as f:
                     f.write(f'{mos}\n')
 
-            # Clean up service definitions
-            print('Removing', mos, 'service definitions')
-            os.remove(os.path.join(workspace, f'{mos}.sddraft'))
-            os.remove(os.path.join(workspace, f'{mos}.sd'))
+            try:
+                os.remove(os.path.join(workspace, f'{mos}.sddraft'))
+                os.remove(os.path.join(workspace, f'{mos}.sd'))
+    
+                print('Cleaned', mos, 'service definitions')
+            except FileNotFoundError:
+                pass
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

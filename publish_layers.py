@@ -18,6 +18,9 @@ def create_name(mos):
 
     return f'{img_type}_{datetime}'
 
+def create_tags(mos):
+    return f'CWR,Imagery,{get_type(mos)},ARS,PDI'
+
 def publish_layers(workspace):
     """
     workspace: Folder containg GDB(s)
@@ -50,7 +53,7 @@ def publish_layers(workspace):
                         copy_data_to_server=True,
                         folder_name='CWR',
                         summary=mos,
-                        tags='ARS, CWR'
+                        tags=create_tags(mos)
                     )
 
                     break

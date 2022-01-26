@@ -14,7 +14,7 @@ def convert_raster(input_dir, output_dir):
 
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
-            if '__thrsld' in file or 'narea_areakm2' in file:
+            if 'narea_areakm2' in file:
                 continue
 
             output_rast = file.replace('.tif', '.mrf')

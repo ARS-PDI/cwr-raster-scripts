@@ -3,7 +3,7 @@ import sys
 import arcpy
 from time import gmtime, strftime
 
-def get_type(mos):
+def _get_img_type(mos):
     img_types = ['ersEx_ecos', 'ersIn_ecos', 'ga50', 'grsEx', 'grsIn', 'median']
 
     for img_type in img_types:
@@ -13,13 +13,13 @@ def get_type(mos):
     raise ValueError('Unknown image type')
 
 def create_name(mos):
-    img_type = get_type(mos)
+    img_type = _get_img_type(mos)
     datetime = strftime("%m%d%y%H%M", gmtime())
 
     return f'{img_type}_{datetime}'
 
 def create_tags(mos):
-    return f'CWR,Imagery,{get_type(mos)},ARS,PDI'
+    return f'CWR,Imagery,{_get_img_type(mos)},ARS,PDI'
 
 def publish_layers(workspace):
     """

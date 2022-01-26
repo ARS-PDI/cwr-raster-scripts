@@ -1,6 +1,22 @@
 import os
 import sys
 import arcpy
+from time import gmtime, strftime
+
+def get_type(mos):
+    img_types = ['ersEx_ecos', 'ersIn_ecos', 'ga50', 'grsEx', 'grsIn', 'median']
+
+    for img_type in img_types:
+        if img_type in mos:
+            return img_type
+
+    raise ValueError('Unknown image type')
+
+def create_name(mos):
+    img_type = get_type(mos)
+    datetime = strftime("%m%d%y%H%M", gmtime())
+
+    return f'{img_type}_{datetime}'
 
 def publish_layers(workspace):
     """
@@ -29,7 +45,7 @@ def publish_layers(workspace):
                     arcpy.CreateImageSDDraft(
                         os.path.join(gdb_path, mos),
                         sd_draft,
-                        mos,
+                        create_name(mos),
                         'ARCGIS_SERVER',
                         copy_data_to_server=True,
                         folder_name='CWR',

@@ -8,6 +8,8 @@ img_types = ['ersEx', 'ersIn', 'ga50', 'grsEx', 'grsIn', 'thrsld']
 def _get_img_type(mos):
     for img_type in img_types:
         if img_type in mos:
+            if img_type == 'thrsld':
+                return 'median'
             return img_type
 
     raise ValueError('Unknown image type')
@@ -17,6 +19,47 @@ def create_name(mos):
     datetime = strftime('%m%d%y%H%M', gmtime())
 
     return f'{img_type}_{datetime}'
+
+def get_species(name_list):
+    type_idx = -1
+
+    for i in range(len(img_types)):
+        try:
+            type_idx = name_list.index(img_types[i])
+        except ValueError:
+            continue
+
+    if type_idx < 0:
+        raise ValueError('No image type found.')
+
+    species = ''
+
+    for i in range(1, type_idx):
+        species += f'{name_list[i]} '
+
+    return species.strip(), type_idx
+
+def create_img_type(name_list, type_idx):
+    img_type = name_list[type_idx]
+
+    if type_idx < len(name_list) - 1:
+        img_type += f'_{name_list[-1]}'
+
+    return img_type
+
+def _get_img_data(mos):
+    name_list = mos.split('_')
+
+    genus = name_list[0]
+    species, type_idx = get_species(name_list)
+    img_type = create_img_type(name_list, type_idx)
+
+    return genus, species, img_type
+
+def create_summary(mos):
+    genus, species, img_type = _get_img_data(mos)
+
+    return f'{genus}\n{genus + " " + species}\n{img_type}'
 
 def create_tags(mos):
     return f'CWR,Imagery,{_get_img_type(mos)},ARS,PDI'
@@ -52,7 +95,7 @@ def publish_layers(workspace):
                         'ARCGIS_SERVER',
                         copy_data_to_server=True,
                         folder_name='CWR',
-                        summary=mos,
+                        summary=create_summary(mos),
                         tags=create_tags(mos)
                     )
 

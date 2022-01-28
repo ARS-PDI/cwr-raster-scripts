@@ -1,11 +1,11 @@
+import arcpy
 import os
 import sys
-import arcpy
 from time import gmtime, strftime
 
-def _get_img_type(mos):
-    img_types = ['ersEx_ecos', 'ersIn_ecos', 'ga50', 'grsEx', 'grsIn', 'median']
+img_types = ['ersEx', 'ersIn', 'ga50', 'grsEx', 'grsIn', 'thrsld']
 
+def _get_img_type(mos):
     for img_type in img_types:
         if img_type in mos:
             return img_type
@@ -14,7 +14,7 @@ def _get_img_type(mos):
 
 def create_name(mos):
     img_type = _get_img_type(mos)
-    datetime = strftime("%m%d%y%H%M", gmtime())
+    datetime = strftime('%m%d%y%H%M', gmtime())
 
     return f'{img_type}_{datetime}'
 

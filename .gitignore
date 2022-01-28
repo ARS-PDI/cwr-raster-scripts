@@ -1,5 +1,8 @@
+__pycache__
 .vscode
+
 *.sd*
-*.gdb
 test*
+
 publish_log.txt
+GDB/

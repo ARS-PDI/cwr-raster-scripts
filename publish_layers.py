@@ -20,6 +20,13 @@ def create_name(mos):
 
     return f'{img_type}_{datetime}'
 
+def _check_species(species):
+    for kw in ['var', 'subsp']:
+        if kw in species:
+            species = species.replace(kw, f'{kw}.')
+
+    return species.strip()
+
 def get_species(name_list):
     type_idx = -1
 
@@ -37,7 +44,7 @@ def get_species(name_list):
     for i in range(1, type_idx):
         species += f'{name_list[i]} '
 
-    return species.strip(), type_idx
+    return _check_species(species), type_idx
 
 def create_img_type(name_list, type_idx):
     img_type = name_list[type_idx]

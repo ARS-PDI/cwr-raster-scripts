@@ -4,13 +4,14 @@ import os
 import sys
 import arcpy
 
+
 def convert_raster(input_dir, output_dir):
     """
     Recursive function that converts all raster datasets under an input directory
     into an output folder
     """
     pixel_t = '8_BIT_UNSIGNED'
-    nodata_val = 255 # max unsigned 8-bit val
+    nodata_val = 255  # max unsigned 8-bit val
 
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
@@ -18,7 +19,7 @@ def convert_raster(input_dir, output_dir):
                 continue
 
             output_rast = file.replace('.tif', '.mrf')
-            
+
             if 'ga50' in file:
                 output_rast = f'{os.path.basename(input_dir)}_ga50.mrf'
             elif '_median' in file:
@@ -29,7 +30,7 @@ def convert_raster(input_dir, output_dir):
                 for cls in ['ersIn', 'ersIn_ecos', 'ersEx', 'ersEx_ecos']:
                     if cls in file:
                         pixel_t = '32_BIT_UNSIGNED'
-                        nodata_val = 4294967295 # max unsigned 32-bit val
+                        nodata_val = 4294967295  # max unsigned 32-bit val
                         break
 
                 arcpy.CopyRaster_management(
@@ -51,7 +52,9 @@ def convert_raster(input_dir, output_dir):
             except FileExistsError:
                 pass
 
-            convert_raster(os.path.join(input_dir, file), os.path.join(output_dir, file))
+            convert_raster(os.path.join(input_dir, file),
+                           os.path.join(output_dir, file))
+
 
 def checkup(input_dir, output_dir, no_match):
     """
@@ -66,12 +69,14 @@ def checkup(input_dir, output_dir, no_match):
         elif '_median' in file:
             file = file.replace('spdist_thrsld_median',
                                 f'{os.path.basename(input_dir)}_spdist_thrsld_median')
-        
+
         if file.endswith('.tif'):
             if file.replace('.tif', '.mrf.aux.xml') not in os.listdir(output_dir):
                 no_match.append(os.path.join(input_dir, file))
         elif os.path.isdir(os.path.join(input_dir, file)):
-            checkup(os.path.join(input_dir, file), os.path.join(output_dir, file), no_match)
+            checkup(os.path.join(input_dir, file),
+                    os.path.join(output_dir, file), no_match)
+
 
 def cleanup(input_dir):
     """
@@ -84,24 +89,28 @@ def cleanup(input_dir):
         elif os.path.isdir(os.path.join(input_dir, file)):
             cleanup(os.path.join(input_dir, file))
 
+
 def raise_os_error():
-    raise OSError('Usage: python3 convert_rasters.py [input folder] [output folder]')
-    
+    raise OSError(
+        'Usage: python3 convert_rasters.py [input folder] [output folder]')
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         raise_os_error()
 
-    input_dir  = sys.argv[1]
+    input_dir = sys.argv[1]
     output_dir = sys.argv[2]
 
     if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
         raise_os_error()
-    
-    arcpy.env.compression            = 'LERC 0'
-    arcpy.env.outputCoordinateSystem = arcpy.SpatialReference('WGS 1984 UTM Zone 14N')
-    arcpy.env.rasterStatistics       = 'STATISTICS 1 1'
-    arcpy.env.overwriteOutput        = False
-    
+
+    arcpy.env.compression = 'LERC 0'
+    arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(
+        'WGS 1984 UTM Zone 14N')
+    arcpy.env.rasterStatistics = 'STATISTICS 1 1'
+    arcpy.env.overwriteOutput = False
+
     convert_raster(input_dir, output_dir)
     print('Finished converting')
 

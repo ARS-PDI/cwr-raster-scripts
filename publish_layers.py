@@ -5,6 +5,7 @@ from time import gmtime, strftime
 
 img_types = ['ersEx', 'ersIn', 'ga50', 'grsEx', 'grsIn', 'thrsld']
 
+
 def _get_img_type(mos):
     for img_type in img_types:
         if img_type in mos:
@@ -14,11 +15,13 @@ def _get_img_type(mos):
 
     raise ValueError('Unknown image type')
 
+
 def create_name(mos):
     img_type = _get_img_type(mos)
     datetime = strftime('%m%d%y%H%M', gmtime())
 
     return f'{img_type}_{datetime}'
+
 
 def _check_species(species):
     for kw in ['var', 'subsp']:
@@ -26,6 +29,7 @@ def _check_species(species):
             species = species.replace(kw, f'{kw}.')
 
     return species.strip()
+
 
 def get_species(name_list):
     type_idx = -1
@@ -46,6 +50,7 @@ def get_species(name_list):
 
     return _check_species(species), type_idx
 
+
 def create_img_type(name_list, type_idx):
     img_type = name_list[type_idx]
 
@@ -53,6 +58,7 @@ def create_img_type(name_list, type_idx):
         img_type += f'_{name_list[-1]}'
 
     return img_type
+
 
 def _get_img_data(mos):
     name_list = mos.split('_')
@@ -63,13 +69,16 @@ def _get_img_data(mos):
 
     return genus, species, img_type
 
+
 def create_summary(mos):
     genus, species, img_type = _get_img_data(mos)
 
     return f'{genus}\n{genus + " " + species}\n{img_type}'
 
+
 def create_tags(mos):
     return f'CWR,Imagery,{_get_img_type(mos)},ARS,PDI'
+
 
 def publish_layers(workspace):
     """
@@ -122,7 +131,8 @@ def publish_layers(workspace):
 
             for curr_try in range(max_tries):
                 try:
-                    print(f'[{curr_try + 1}] Uploading the service definition for', mos)
+                    print(
+                        f'[{curr_try + 1}] Uploading the service definition for', mos)
 
                     arcpy.UploadServiceDefinition_server(
                         sd,
@@ -134,7 +144,7 @@ def publish_layers(workspace):
 
                     print(f'{mos} successfully published')
                     success = True
-                    
+
                     break
                 except:
                     pass
@@ -146,10 +156,11 @@ def publish_layers(workspace):
             try:
                 os.remove(os.path.join(workspace, f'{mos}.sddraft'))
                 os.remove(os.path.join(workspace, f'{mos}.sd'))
-    
+
                 print('Cleaned', mos, 'service definitions')
             except FileNotFoundError:
                 pass
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

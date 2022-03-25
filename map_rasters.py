@@ -3,15 +3,10 @@ import sys
 import time
 import arcpy
 
-def stdize(s):
-    s = s.replace('__', '_')
-    s = s.replace(' ', '_')
-    s = s.replace('-', '_')
-    s = s.replace('.', '')
-    s = s.replace('(', '')
-    s = s.replace(')', '')
 
-    return s
+def stdize(s):
+    return s.replace('__', '_').replace(' ', '_').replace('-', '_').replace('.', '').replace('(', '').replace(')', '')
+
 
 def map_rasters(input_dir, workspace, rast_funcs, fgdb):
     fgdb_path = os.path.join(workspace, 'GDB', fgdb)
@@ -31,7 +26,8 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
 
                     break
 
-            map_rasters(os.path.join(input_dir, file), workspace, rast_funcs, fgdb)
+            map_rasters(os.path.join(input_dir, file),
+                        workspace, rast_funcs, fgdb)
         elif file.endswith('.mrf'):
             input_rast_path = os.path.join(input_dir, file)
             local_time = time.localtime()
@@ -61,7 +57,8 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
                 arcpy.CreateMosaicDataset_management(
                     fgdb_path,                                    # Path to new mosaic
                     mosaic,                                       # Mosaic name
-                    arcpy.SpatialReference('WGS 1984')            # Coordinate system
+                    # Coordinate system
+                    arcpy.SpatialReference('WGS 1984')
                 )
             except KeyboardInterrupt:
                 exit(0)
@@ -81,6 +78,7 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
                 processing_templates=rast_func_path,              # Processing templates
                 default_processing_template=rast_func_path        # Default template
             )
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:

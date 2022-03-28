@@ -1,7 +1,8 @@
-import arcpy
 import os
 import sys
 from time import gmtime, strftime
+
+import arcpy
 
 img_types = ['ersEx', 'ersIn', 'ga50', 'grsEx', 'grsIn', 'thrsld']
 

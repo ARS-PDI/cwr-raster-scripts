@@ -27,12 +27,6 @@ def convert_raster(input_dir, output_dir):
 
             print('Converting', os.path.join(input_dir, file))
             try:
-                for cls in ['ersIn', 'ersIn_ecos', 'ersEx', 'ersEx_ecos']:
-                    if cls in file:
-                        pixel_t = '32_BIT_UNSIGNED'
-                        nodata_val = 4294967295  # max unsigned 32-bit val
-                        break
-
                 arcpy.CopyRaster_management(
                     in_raster=os.path.join(input_dir, file),
                     out_rasterdataset=os.path.join(output_dir, output_rast),

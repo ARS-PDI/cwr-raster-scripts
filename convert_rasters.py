@@ -2,6 +2,7 @@
 
 import os
 import sys
+from traceback import print_exc
 
 import arcpy
 
@@ -15,7 +16,7 @@ def get_output_raster(file):
         'ga50': 'ex_coll.mrf',
         'grsEx': 'ex_geo_gaps.mrf',
         'grsIn': 'in_geo_gaps.mrf',
-        'median': 'distribution.mrf'
+        'thrsld': 'distribution.mrf'
     }
 
     for key in img_type_map:
@@ -39,9 +40,13 @@ def convert_raster(input_dir, output_dir):
 
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
-            output_rast = get_output_raster(file)
+            filename = file
 
-            print('Converting', os.path.join(input_dir, file))
+            if 'ga50' in file:
+                filename = f'{os.path.basename(input_dir)}_ga50.mrf'
+
+            output_rast = get_output_raster(filename)
+
             try:
                 arcpy.CopyRaster_management(
                     in_raster=os.path.join(input_dir, file),
@@ -50,20 +55,12 @@ def convert_raster(input_dir, output_dir):
                     nodata_value=nodata_val,
                     pixel_type=pixel_t,
                     format='MRF',
-                    transform='NONE'
-                )
-            except KeyboardInterrupt:
-                exit()
-            except:
-                pass
+                    transform='NONE')
+            except arcpy.ExecuteError:
+                print('Failed to convert', os.path.join(input_dir, file))
+                print_exc()
         elif os.path.isdir(os.path.join(input_dir, file)):
-            try:
-                os.mkdir(os.path.join(output_dir, file))
-            except FileExistsError:
-                pass
-
-            convert_raster(os.path.join(input_dir, file),
-                           os.path.join(output_dir, file))
+            convert_raster(os.path.join(input_dir, file), output_dir)
 
 
 def checkup(input_dir, output_dir, no_match):

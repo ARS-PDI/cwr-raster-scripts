@@ -2,7 +2,31 @@
 
 import os
 import sys
+
 import arcpy
+
+from map_rasters import stdize
+
+
+def get_output_raster(file):
+    img_type_map = {
+        'ersEx_ecos': 'ex_eco_gaps.tif',
+        'ersIn_ecos': 'in_eco_gaps.tif',
+        'ga50': 'ex_coll.mrf',
+        'grsEx': 'ex_geo_gaps.mrf',
+        'grsIn': 'in_geo_gaps.mrf',
+        'median': 'distribution.mrf'
+    }
+
+    for key in img_type_map:
+        if key in file:
+            raster_name = stdize(file)
+            raster_name = raster_name.split(f'_{key}')[0]
+            img_type = img_type_map[key]
+
+            return f'{raster_name}_{img_type}'
+
+    raise RuntimeError(f'Unknown image type: {file}')
 
 
 def convert_raster(input_dir, output_dir):
@@ -15,15 +39,7 @@ def convert_raster(input_dir, output_dir):
 
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
-            if 'narea_areakm2' in file:
-                continue
-
-            output_rast = file.replace('.tif', '.mrf')
-
-            if 'ga50' in file:
-                output_rast = f'{os.path.basename(input_dir)}_ga50.mrf'
-            elif '_median' in file:
-                output_rast = f'{os.path.basename(input_dir)}_spdist_thrsld_median.mrf'
+            output_rast = get_output_raster(file)
 
             print('Converting', os.path.join(input_dir, file))
             try:

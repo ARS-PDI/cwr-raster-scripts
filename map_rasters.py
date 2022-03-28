@@ -9,6 +9,13 @@ def stdize(s):
     return s.replace('__', '_').replace(' ', '_').replace('-', '_').replace('.', '').replace('(', '').replace(')', '')
 
 
+def create_gdb(name):
+    try:
+        arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
+    except arcpy.ExecuteError:
+        pass
+
+
 def map_rasters(input_dir, workspace, rast_funcs, fgdb):
     fgdb_path = os.path.join(workspace, 'GDB', fgdb)
 
@@ -82,8 +89,14 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         exit('Usage: python3 map_rasters.py [root folder]')
+
+    # Set environment variables
+    arcpy.env.workspace = os.getcwd()
+    arcpy.env.overwriteOutput = False
+
+    create_gdb('CWR.gdb')
 
     root_dir = sys.argv[1]
     templates_dir = 'templates'
@@ -94,10 +107,6 @@ if __name__ == '__main__':
         'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml'),
         'ecos': os.path.join(templates_dir, 'ecos.rft.xml')
     }
-
-    # Set environment variables
-    arcpy.env.workspace = os.getcwd()
-    arcpy.env.overwriteOutput = False
 
     # Create new file Geodatabase in current directory and set environment variables
     try:

@@ -16,6 +16,18 @@ def create_gdb(name):
         pass
 
 
+def create_mosaics(gdb, mosaics):
+    for mosaic in mosaics:
+        try:
+            arcpy.CreateMosaicDataset_management(
+                gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
+        except arcpy.ExecuteError:
+            arcpy.DeleteMosaicDataset_management(
+                os.path.join(arcpy.env.workspace, gdb, mosaic))
+            arcpy.CreateMosaicDataset_management(
+                gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
+
+
 def map_rasters(input_dir, workspace, rast_funcs, fgdb):
     fgdb_path = os.path.join(workspace, 'GDB', fgdb)
 
@@ -96,7 +108,10 @@ if __name__ == '__main__':
     arcpy.env.workspace = os.getcwd()
     arcpy.env.overwriteOutput = False
 
-    create_gdb('CWR.gdb')
+    fgdb = 'CWR.gdb'
+    create_gdb(fgdb)
+    create_mosaics(fgdb, ["Distribution", "Ex situ eco gaps", "In situ eco gaps",
+                   "Ex situ collections", "Ex situ geo gaps", "In situ geo gaps"])
 
     root_dir = sys.argv[1]
     templates_dir = 'templates'

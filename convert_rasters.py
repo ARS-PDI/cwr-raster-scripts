@@ -6,7 +6,9 @@ from traceback import print_exc
 
 import arcpy
 
-from map_rasters import stdize
+
+def stdize(s):
+    return s.replace('__', '_').replace(' ', '_').replace('-', '_').replace('.', '').replace('(', '').replace(')', '')
 
 
 def get_output_raster(file):

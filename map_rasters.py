@@ -5,10 +5,6 @@ import time
 import arcpy
 
 
-def stdize(s):
-    return s.replace('__', '_').replace(' ', '_').replace('-', '_').replace('.', '').replace('(', '').replace(')', '')
-
-
 def create_gdb(name):
     arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
@@ -42,7 +38,6 @@ def map_rasters(input_dir, fgdb):
         print(time.strftime('[%I:%M:%S]', local_time), input_rast_path)
 
         mosaic = file.replace('.mrf', '').replace('.tif', '')
-        mosaic = stdize(mosaic)
 
         rast_func = get_raster_func(file)
 

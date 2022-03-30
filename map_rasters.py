@@ -4,12 +4,23 @@ import time
 
 import arcpy
 
+mosaics = {
+    'distribution': 'distribution',
+    'ex_situ_eco_gaps': 'ex_eco_gaps',
+    'in_situ_eco_gaps': 'in_eco_gaps',
+    'ex_situ_collections': 'ex_coll',
+    'ex_situ_geo_gaps': 'ex_geo_gaps',
+    'in_situ_geo_gaps': 'in_geo_gaps'
+}
+
 
 def create_gdb(name):
     arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
 
-def create_mosaics(gdb, mosaics):
+def create_mosaics(gdb):
+    global mosaics
+
     for mosaic in mosaics:
         arcpy.CreateMosaicDataset_management(
             gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
@@ -65,10 +76,8 @@ if __name__ == '__main__':
     arcpy.env.overwriteOutput = True
 
     fgdb = 'CWR.gdb'
-    mosaics = ["Distribution", "Ex situ eco gaps", "In situ eco gaps",
-               "Ex situ collections", "Ex situ geo gaps", "In situ geo gaps"]
     create_gdb(fgdb)
-    create_mosaics(fgdb, mosaics)
+    create_mosaics(fgdb)
 
     input_dir = sys.argv[1]
 

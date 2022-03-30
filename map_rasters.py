@@ -10,22 +10,13 @@ def stdize(s):
 
 
 def create_gdb(name):
-    try:
-        arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
-    except arcpy.ExecuteError:
-        pass
+    arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
 
 def create_mosaics(gdb, mosaics):
     for mosaic in mosaics:
-        try:
-            arcpy.CreateMosaicDataset_management(
-                gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
-        except arcpy.ExecuteError:
-            arcpy.DeleteMosaicDataset_management(
-                os.path.join(arcpy.env.workspace, gdb, mosaic))
-            arcpy.CreateMosaicDataset_management(
-                gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
+        arcpy.CreateMosaicDataset_management(
+            gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
 
 
 def map_rasters(input_dir, workspace, rast_funcs, fgdb):
@@ -106,7 +97,7 @@ if __name__ == '__main__':
 
     # Set environment variables
     arcpy.env.workspace = os.getcwd()
-    arcpy.env.overwriteOutput = False
+    arcpy.env.overwriteOutput = True
 
     fgdb = 'CWR.gdb'
     create_gdb(fgdb)

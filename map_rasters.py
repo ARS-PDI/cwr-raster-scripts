@@ -19,6 +19,19 @@ def create_mosaics(gdb, mosaics):
             gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
 
 
+def get_raster_func(file):
+    mrf_img_types = [
+        'ex_coll',
+        'ex_geo_gaps',
+        'in_geo_gaps',
+        'distribution'
+    ]
+
+    for img_type in mrf_img_types:
+        if img_type in file:
+            return rast_funcs[img_type]
+
+
 def map_rasters(input_dir, rast_funcs, fgdb):
     fgdb_path = os.path.join(arcpy.env.workspace, fgdb)
 
@@ -27,18 +40,10 @@ def map_rasters(input_dir, rast_funcs, fgdb):
         local_time = time.localtime()
         print(time.strftime('[%I:%M:%S]', local_time), input_rast_path)
 
-        mosaic = file.replace('.mrf', '')
+        mosaic = file.replace('.mrf', '').replace('.tif', '')
         mosaic = stdize(mosaic)
 
-        rast_func = None
-        if 'ga50' in file:
-            rast_func = rast_funcs['ga50']
-        elif 'grsEx' in file:
-            rast_func = rast_funcs['grsEx']
-        elif 'grsIn_proAreas' in file:
-            rast_func = rast_funcs['grsIn_proAreas']
-        elif 'thrsld_median' in file:
-            rast_func = rast_funcs['thrsld_median']
+        rast_func = get_raster_func(file)
 
         mosaic_path = os.path.join(fgdb_path, mosaic)
         arcpy.AddRastersToMosaicDataset_management(
@@ -72,10 +77,10 @@ if __name__ == '__main__':
     input_dir = sys.argv[1]
     templates_dir = 'templates'
     rast_funcs = {
-        'ga50': os.path.join(templates_dir, 'ga50.rft.xml'),
-        'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),
-        'grsIn_proAreas': os.path.join(templates_dir, 'grsIn_proAreas.rft.xml'),
-        'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml'),
+        'distribution': os.path.join(templates_dir, 'distribution.rft.xml'),
+        'ex_coll': os.path.join(templates_dir, 'ex_coll.rft.xml'),
+        'ex_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
+        'in_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')
     }
 
     # Map rasters using custom raster function file and put them into file geodatabase

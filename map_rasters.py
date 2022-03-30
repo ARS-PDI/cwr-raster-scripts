@@ -123,11 +123,5 @@ if __name__ == '__main__':
         'ecos': os.path.join(templates_dir, 'ecos.rft.xml')
     }
 
-    # Create new file Geodatabase in current directory and set environment variables
-    try:
-        os.mkdir('GDB')
-    except FileExistsError:
-        pass
-
     # Map rasters using custom raster function file and put them into file geodatabase
     map_rasters(root_dir, arcpy.env.workspace, rast_funcs, 'default.gdb')

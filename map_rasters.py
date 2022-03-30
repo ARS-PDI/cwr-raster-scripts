@@ -20,19 +20,20 @@ def create_mosaics(gdb, mosaics):
 
 
 def get_raster_func(file):
-    mrf_img_types = [
-        'ex_coll',
-        'ex_geo_gaps',
-        'in_geo_gaps',
-        'distribution'
-    ]
+    templates_dir = 'templates'
+    rast_funcs = {
+        'distribution': os.path.join(templates_dir, 'distribution.rft.xml'),
+        'ex_coll': os.path.join(templates_dir, 'ex_coll.rft.xml'),
+        'ex_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
+        'in_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')
+    }
 
-    for img_type in mrf_img_types:
+    for img_type in rast_funcs:
         if img_type in file:
             return rast_funcs[img_type]
 
 
-def map_rasters(input_dir, rast_funcs, fgdb):
+def map_rasters(input_dir, fgdb):
     fgdb_path = os.path.join(arcpy.env.workspace, fgdb)
 
     for file in os.listdir(input_dir):
@@ -75,13 +76,6 @@ if __name__ == '__main__':
     create_mosaics(fgdb, mosaics)
 
     input_dir = sys.argv[1]
-    templates_dir = 'templates'
-    rast_funcs = {
-        'distribution': os.path.join(templates_dir, 'distribution.rft.xml'),
-        'ex_coll': os.path.join(templates_dir, 'ex_coll.rft.xml'),
-        'ex_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
-        'in_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')
-    }
 
     # Map rasters using custom raster function file and put them into file geodatabase
-    map_rasters(input_dir, rast_funcs, fgdb)
+    map_rasters(input_dir, fgdb)

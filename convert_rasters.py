@@ -2,6 +2,7 @@
 
 import os
 import sys
+from shutil import copy2
 from traceback import print_exc
 
 import arcpy
@@ -48,6 +49,11 @@ def convert_raster(input_dir, output_dir):
                 filename = f'{os.path.basename(input_dir)}_ga50.mrf'
 
             output_rast = get_output_raster(filename)
+
+            if output_rast.endswith('.tif'):
+                copy2(os.path.join(input_dir, file),
+                      os.path.join(output_dir, output_rast))
+                continue
 
             try:
                 arcpy.CopyRaster_management(

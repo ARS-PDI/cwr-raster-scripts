@@ -100,9 +100,10 @@ if __name__ == '__main__':
     arcpy.env.overwriteOutput = True
 
     fgdb = 'CWR.gdb'
+    mosaics = ["Distribution", "Ex situ eco gaps", "In situ eco gaps",
+               "Ex situ collections", "Ex situ geo gaps", "In situ geo gaps"]
     create_gdb(fgdb)
-    create_mosaics(fgdb, ["Distribution", "Ex situ eco gaps", "In situ eco gaps",
-                   "Ex situ collections", "Ex situ geo gaps", "In situ geo gaps"])
+    create_mosaics(fgdb, mosaics)
 
     root_dir = sys.argv[1]
     templates_dir = 'templates'
@@ -111,7 +112,6 @@ if __name__ == '__main__':
         'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),
         'grsIn_proAreas': os.path.join(templates_dir, 'grsIn_proAreas.rft.xml'),
         'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml'),
-        'ecos': os.path.join(templates_dir, 'ecos.rft.xml')
     }
 
     # Map rasters using custom raster function file and put them into file geodatabase

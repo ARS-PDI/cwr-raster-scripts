@@ -19,8 +19,8 @@ def create_mosaics(gdb, mosaics):
             gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
 
 
-def map_rasters(input_dir, workspace, rast_funcs, fgdb):
-    fgdb_path = os.path.join(workspace, 'GDB', fgdb)
+def map_rasters(input_dir, rast_funcs, fgdb):
+    fgdb_path = os.path.join(arcpy.env.workspace, fgdb)
 
     for file in os.listdir(input_dir):
         input_rast_path = os.path.join(input_dir, file)
@@ -47,7 +47,7 @@ def map_rasters(input_dir, workspace, rast_funcs, fgdb):
             input_rast_path                                   # Path to input raster
         )
 
-        rast_func_path = os.path.join(workspace, rast_func)
+        rast_func_path = os.path.join(arcpy.env.workspace, rast_func)
         arcpy.SetMosaicDatasetProperties_management(
             mosaic_path,                                      # Target mosaic dataset
             processing_templates=rast_func_path,              # Processing templates
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     create_gdb(fgdb)
     create_mosaics(fgdb, mosaics)
 
-    root_dir = sys.argv[1]
+    input_dir = sys.argv[1]
     templates_dir = 'templates'
     rast_funcs = {
         'ga50': os.path.join(templates_dir, 'ga50.rft.xml'),
@@ -79,4 +79,4 @@ if __name__ == '__main__':
     }
 
     # Map rasters using custom raster function file and put them into file geodatabase
-    map_rasters(root_dir, arcpy.env.workspace, rast_funcs, 'default.gdb')
+    map_rasters(input_dir, rast_funcs, fgdb)

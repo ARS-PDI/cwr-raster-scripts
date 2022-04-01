@@ -28,6 +28,9 @@ def publish_layers():
                                              in_public=True,
                                              in_organization='SHARE_ORGANIZATION')
 
+        os.remove(os.path.join(os.getcwd(), sd_draft))
+        os.remove(os.path.join(os.getcwd(), sd))
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

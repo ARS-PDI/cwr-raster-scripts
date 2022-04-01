@@ -163,6 +163,31 @@ def publish_layers(workspace):
                 pass
 
 
+def publish_layers2():
+    mosaics = arcpy.ListDatasets(feature_type='Mosaic')
+
+    for mosaic in mosaics:
+        sd_draft = f'{mosaic}.sddraft'
+        sd = f'{mosaic}.sd'
+
+        arcpy.CreateImageSDDraft(mosaic,
+                                 sd_draft,
+                                 mosaic,
+                                 'ARCGIS_SERVER',
+                                 copy_data_to_server=True,
+                                 folder_name='CWR',
+                                 summary=mosaic,
+                                 tags=create_tags(mosaic))
+
+        arcpy.StageService_server(sd_draft, sd)
+
+        arcpy.UploadServiceDefinition_server(sd,
+                                             'https://pdiimagery.azurecloudgov.us/arcgis',
+                                             in_my_contents=True,
+                                             in_public=True,
+                                             in_organization='SHARE_ORGANIZATION')
+
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         exit('Usage: python3 publish_layers.py [GDBs folder]')

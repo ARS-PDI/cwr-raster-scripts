@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 
 import arcpy
 
@@ -35,11 +34,9 @@ def add_rasters_to_mosaics(input_dir, fgdb):
         mosaic_rasts = [r for r in rasters if img_type in r]
         mosaic_path = os.path.join(fgdb, mosaics[img_type])
 
-        arcpy.AddRastersToMosaicDataset_management(
-            mosaic_path,
-            'Raster Dataset',
-            [os.path.join(input_dir, r) for r in mosaic_rasts]
-        )
+        arcpy.AddRastersToMosaicDataset_management(mosaic_path,
+                                                   'Raster Dataset',
+                                                   [os.path.join(input_dir, r) for r in mosaic_rasts])
 
 
 def get_raster_func(input):
@@ -61,11 +58,9 @@ def set_raster_funcs(fgdb):
         try:
             raster_func = get_raster_func(mosaic)
 
-            arcpy.SetMosaicDatasetProperties_management(
-                os.path.join(fgdb, mosaic),
-                processing_templates=raster_func,
-                default_processing_template=raster_func
-            )
+            arcpy.SetMosaicDatasetProperties_management(os.path.join(fgdb, mosaic),
+                                                        processing_templates=raster_func,
+                                                        default_processing_template=raster_func)
         except KeyError:
             pass
 
@@ -74,11 +69,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         exit('Usage: python3 map_rasters.py [root folder]')
 
-    # Set environment variables
     arcpy.env.workspace = os.getcwd()
     arcpy.env.overwriteOutput = True
-
     fgdb = 'CWR.gdb'
+
     create_gdb(fgdb)
     create_mosaics(fgdb)
 

@@ -56,14 +56,14 @@ def convert_raster(input_dir, output_dir):
                 continue
 
             try:
-                arcpy.CopyRaster_management(
-                    in_raster=os.path.join(input_dir, file),
-                    out_rasterdataset=os.path.join(output_dir, output_rast),
-                    background_value=nodata_val,
-                    nodata_value=nodata_val,
-                    pixel_type=pixel_t,
-                    format='MRF',
-                    transform='NONE')
+                arcpy.CopyRaster_management(in_raster=os.path.join(input_dir, file),
+                                            out_rasterdataset=os.path.join(
+                                                output_dir, output_rast),
+                                            background_value=nodata_val,
+                                            nodata_value=nodata_val,
+                                            pixel_type=pixel_t,
+                                            format='MRF',
+                                            transform='NONE')
             except arcpy.ExecuteError:
                 print('Failed to convert', os.path.join(input_dir, file))
                 print_exc()

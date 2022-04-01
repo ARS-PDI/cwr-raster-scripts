@@ -40,6 +40,22 @@ def get_raster_func(file):
             return rast_funcs[img_type]
 
 
+def add_rasters_to_mosaics(input_dir, fgdb):
+    global mosaics
+
+    rasters = os.listdir(input_dir)
+
+    for img_type in mosaics:
+        mosaic_rasts = [r for r in rasters if img_type in r]
+        mosaic_path = os.path.join(fgdb, mosaics[img_type])
+
+        arcpy.AddRastersToMosaicDataset_management(
+            mosaic_path,
+            'Raster Dataset',
+            [os.path.join(input_dir, r) for r in mosaic_rasts]
+        )
+
+
 def map_rasters(input_dir, fgdb):
     fgdb_path = os.path.join(arcpy.env.workspace, fgdb)
 
@@ -80,6 +96,8 @@ if __name__ == '__main__':
     create_mosaics(fgdb)
 
     input_dir = sys.argv[1]
+
+    add_rasters_to_mosaics(input_dir, fgdb)
 
     # Map rasters using custom raster function file and put them into file geodatabase
     map_rasters(input_dir, fgdb)

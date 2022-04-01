@@ -28,11 +28,15 @@ def create_mosaics(gdb):
 def add_rasters_to_mosaics(input_dir, fgdb):
     global mosaics
 
-    rasters = os.listdir(input_dir)
+    old_workspace = arcpy.env.workspace
+    arcpy.env.workspace = input_dir
+    rasters = arcpy.ListRasters('*')
+    arcpy.env.workspace = old_workspace
 
-    for img_type in mosaics:
+    for mosaic in mosaics:
+        img_type = mosaics[mosaic]
         mosaic_rasts = [r for r in rasters if img_type in r]
-        mosaic_path = os.path.join(fgdb, mosaics[img_type])
+        mosaic_path = os.path.join(fgdb, mosaic)
 
         arcpy.AddRastersToMosaicDataset_management(mosaic_path,
                                                    'Raster Dataset',

@@ -19,7 +19,7 @@ def get_output_raster(file):
         'ga50': 'ex_coll.mrf',
         'grsEx': 'ex_geo_gaps.mrf',
         'grsIn': 'in_geo_gaps.mrf',
-        'thrsld': 'distribution.mrf'
+        'thrsld': 'distr.mrf'
     }
 
     for key in img_type_map:

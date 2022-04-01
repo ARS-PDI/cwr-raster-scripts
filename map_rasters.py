@@ -5,7 +5,7 @@ import time
 import arcpy
 
 mosaics = {
-    'distribution': 'distribution',
+    'distribution': 'distr',
     'ex_situ_eco_gaps': 'ex_eco_gaps',
     'in_situ_eco_gaps': 'in_eco_gaps',
     'ex_situ_collections': 'ex_coll',
@@ -29,7 +29,7 @@ def create_mosaics(gdb):
 def get_raster_func(file):
     templates_dir = 'templates'
     rast_funcs = {
-        'distribution': os.path.join(templates_dir, 'distribution.rft.xml'),
+        'distr': os.path.join(templates_dir, 'distr.rft.xml'),
         'ex_coll': os.path.join(templates_dir, 'ex_coll.rft.xml'),
         'ex_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
         'in_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')

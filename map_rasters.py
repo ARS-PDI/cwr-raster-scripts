@@ -70,33 +70,6 @@ def set_raster_funcs(fgdb):
             pass
 
 
-def map_rasters(input_dir, fgdb):
-    fgdb_path = os.path.join(arcpy.env.workspace, fgdb)
-
-    for file in os.listdir(input_dir):
-        input_rast_path = os.path.join(input_dir, file)
-        local_time = time.localtime()
-        print(time.strftime('[%I:%M:%S]', local_time), input_rast_path)
-
-        mosaic = file.replace('.mrf', '').replace('.tif', '')
-
-        rast_func = get_raster_func(file)
-
-        mosaic_path = os.path.join(fgdb_path, mosaic)
-        arcpy.AddRastersToMosaicDataset_management(
-            mosaic_path,                                      # Target mosaic dataset
-            'Raster Dataset',                                 # Raster type
-            input_rast_path                                   # Path to input raster
-        )
-
-        rast_func_path = os.path.join(arcpy.env.workspace, rast_func)
-        arcpy.SetMosaicDatasetProperties_management(
-            mosaic_path,                                      # Target mosaic dataset
-            processing_templates=rast_func_path,              # Processing templates
-            default_processing_template=rast_func_path        # Default template
-        )
-
-
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         exit('Usage: python3 map_rasters.py [root folder]')
@@ -109,10 +82,5 @@ if __name__ == '__main__':
     create_gdb(fgdb)
     create_mosaics(fgdb)
 
-    input_dir = sys.argv[1]
-
-    add_rasters_to_mosaics(input_dir, fgdb)
+    add_rasters_to_mosaics(sys.argv[1], fgdb)
     set_raster_funcs(fgdb)
-
-    # Map rasters using custom raster function file and put them into file geodatabase
-    map_rasters(input_dir, fgdb)

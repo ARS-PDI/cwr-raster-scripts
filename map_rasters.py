@@ -26,20 +26,6 @@ def create_mosaics(gdb):
             gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
 
 
-def get_raster_func(file):
-    templates_dir = 'templates'
-    rast_funcs = {
-        'distr': os.path.join(templates_dir, 'distr.rft.xml'),
-        'ex_coll': os.path.join(templates_dir, 'ex_coll.rft.xml'),
-        'ex_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
-        'in_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')
-    }
-
-    for img_type in rast_funcs:
-        if img_type in file:
-            return rast_funcs[img_type]
-
-
 def add_rasters_to_mosaics(input_dir, fgdb):
     global mosaics
 
@@ -54,6 +40,20 @@ def add_rasters_to_mosaics(input_dir, fgdb):
             'Raster Dataset',
             [os.path.join(input_dir, r) for r in mosaic_rasts]
         )
+
+
+def get_raster_func(input):
+    templates_dir = 'templates'
+    rast_funcs = {
+        'distribution': os.path.join(templates_dir, 'distr.rft.xml'),
+        'ex_situ_collections': os.path.join(templates_dir, 'ex_coll.rft.xml'),
+        'ex_situ_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
+        'in_situ_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')
+    }
+
+    for img_type in rast_funcs:
+        if img_type in input:
+            return rast_funcs[img_type]
 
 
 def map_rasters(input_dir, fgdb):

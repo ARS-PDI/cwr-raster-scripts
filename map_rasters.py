@@ -44,7 +44,7 @@ def add_rasters_to_mosaics(input_dir, fgdb):
 
 
 def get_raster_func(input):
-    templates_dir = 'templates'
+    templates_dir = os.path.join(os.getcwd(), 'templates')
     rast_funcs = {
         'distribution': os.path.join(templates_dir, 'distr.rft.xml'),
         'ex_situ_collections': os.path.join(templates_dir, 'ex_coll.rft.xml'),

@@ -15,21 +15,21 @@ def publish_layers():
 
         try:
             arcpy.CreateImageSDDraft(mosaic,
-                                    sd_draft,
-                                    f'cwr_{mosaic}',
-                                    'ARCGIS_SERVER',
-                                    copy_data_to_server=True,
-                                    folder_name='CWR',
-                                    summary=mosaic,
-                                    tags=f'CWR,{mosaic},ARS,PDI')
+                                     sd_draft,
+                                     f'cwr_{mosaic}',
+                                     'ARCGIS_SERVER',
+                                     copy_data_to_server=True,
+                                     folder_name='CWR',
+                                     summary=mosaic,
+                                     tags=f'CWR,{mosaic},ARS,PDI')
 
             arcpy.StageService_server(sd_draft, sd)
 
             arcpy.UploadServiceDefinition_server(sd,
-                                                'https://pdiimagery.azurecloudgov.us/arcgis',
-                                                in_my_contents=True,
-                                                in_public=True,
-                                                in_organization='SHARE_ORGANIZATION')
+                                                 'https://pdiimagery.azurecloudgov.us/arcgis',
+                                                 in_my_contents=True,
+                                                 in_public=True,
+                                                 in_organization='SHARE_ORGANIZATION')
         except arcpy.ExecuteError as e:
             raise e
         finally:

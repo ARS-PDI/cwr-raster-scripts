@@ -36,17 +36,17 @@ def convert_raster(input_dir, output_dir):
     Recursive function that converts all raster datasets under an input directory
     into an output folder
     """
-    for file in os.listdir(input_dir):
-        if file.endswith('.tif'):
-            filename = file
+    for input_file in os.listdir(input_dir):
+        if input_file.endswith('.tif'):
+            output_file = input_file
 
-            if 'ga50' in file:
-                filename = f'{os.path.basename(input_dir)}_ga50.mrf'
+            if 'ga50' in input_file:
+                output_file = f'{os.path.basename(input_dir)}_ga50.mrf'
 
-            output_rast = get_output_raster(filename)
+            output_rast = get_output_raster(output_file)
 
             if output_rast.endswith('.tif'):
-                copy2(os.path.join(input_dir, file),
+                copy2(os.path.join(input_dir, input_file),
                       os.path.join(output_dir, output_rast))
                 continue
 
@@ -54,7 +54,7 @@ def convert_raster(input_dir, output_dir):
                 nodata_val = 255  # max unsigned 8-bit val
                 pixel_type = '8_BIT_UNSIGNED'
 
-                arcpy.CopyRaster_management(in_raster=os.path.join(input_dir, file),
+                arcpy.CopyRaster_management(in_raster=os.path.join(input_dir, input_file),
                                             out_rasterdataset=os.path.join(
                                                 output_dir, output_rast),
                                             background_value=nodata_val,
@@ -63,10 +63,10 @@ def convert_raster(input_dir, output_dir):
                                             format='MRF',
                                             transform='NONE')
             except arcpy.ExecuteError:
-                print('Failed to convert', os.path.join(input_dir, file))
+                print('Failed to convert', os.path.join(input_dir, input_file))
                 print_exc()
-        elif os.path.isdir(os.path.join(input_dir, file)):
-            convert_raster(os.path.join(input_dir, file), output_dir)
+        elif os.path.isdir(os.path.join(input_dir, input_file)):
+            convert_raster(os.path.join(input_dir, input_file), output_dir)
 
 
 def print_usage_msg():

@@ -14,6 +14,8 @@ mosaics = {
 
 
 def create_gdb(name):
+    print('Creating file geodatabase:', fgdb)
+
     arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
 
@@ -34,6 +36,8 @@ def add_rasters_to_mosaics(input_dir, fgdb):
     arcpy.env.workspace = old_workspace
 
     for mosaic in mosaics:
+        print('Creating mosaic dataset:', mosaic)
+
         img_type = mosaics[mosaic]
         mosaic_rasts = [r for r in rasters if img_type in r]
         mosaic_path = os.path.join(fgdb, mosaic)
@@ -58,6 +62,8 @@ def get_raster_func(input):
 
 
 def set_raster_funcs(fgdb):
+    print('Setting raster function processing templates')
+
     for mosaic in mosaics:
         try:
             raster_func = get_raster_func(mosaic)

@@ -92,5 +92,6 @@ if __name__ == "__main__":
     arcpy.env.rasterStatistics = 'STATISTICS 1 1'
     arcpy.env.overwriteOutput = False
 
+    print('Copying rasters from', input_dir, 'to', output_dir)
+
     convert_raster(input_dir, output_dir)
-    print('Finished converting')

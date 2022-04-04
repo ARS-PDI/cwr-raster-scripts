@@ -8,6 +8,8 @@ def publish_layers():
     mosaics = arcpy.ListDatasets(feature_type='Mosaic')
 
     for mosaic in mosaics:
+        print('Publishing', mosaic)
+
         sd_draft = f'{mosaic}.sddraft'
         sd = f'{mosaic}.sd'
 

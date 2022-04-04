@@ -1,5 +1,3 @@
-# Converts all GeoTIFF raster datasets existing in a root directory to MRFs
-
 import os
 import sys
 from shutil import copy2
@@ -38,9 +36,6 @@ def convert_raster(input_dir, output_dir):
     Recursive function that converts all raster datasets under an input directory
     into an output folder
     """
-    pixel_t = '8_BIT_UNSIGNED'
-    nodata_val = 255  # max unsigned 8-bit val
-
     for file in os.listdir(input_dir):
         if file.endswith('.tif'):
             filename = file
@@ -56,12 +51,15 @@ def convert_raster(input_dir, output_dir):
                 continue
 
             try:
+                nodata_val = 255  # max unsigned 8-bit val
+                pixel_type = '8_BIT_UNSIGNED'
+
                 arcpy.CopyRaster_management(in_raster=os.path.join(input_dir, file),
                                             out_rasterdataset=os.path.join(
                                                 output_dir, output_rast),
                                             background_value=nodata_val,
                                             nodata_value=nodata_val,
-                                            pixel_type=pixel_t,
+                                            pixel_type=pixel_type,
                                             format='MRF',
                                             transform='NONE')
             except arcpy.ExecuteError:
@@ -71,20 +69,20 @@ def convert_raster(input_dir, output_dir):
             convert_raster(os.path.join(input_dir, file), output_dir)
 
 
-def raise_os_error():
-    raise OSError(
+def print_usage_msg():
+    raise ValueError(
         'Usage: python3 convert_rasters.py [input folder] [output folder]')
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        raise_os_error()
+        print_usage_msg()
 
     input_dir = sys.argv[1]
     output_dir = sys.argv[2]
 
     if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
-        raise_os_error()
+        print_usage_msg()
 
     arcpy.env.compression = 'LERC 0'
     arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(

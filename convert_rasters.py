@@ -82,6 +82,17 @@ def process_grs_in(input_dir, input_raster, output_dir, output_raster):
     copy_raster(input_dir, reclass_raster, output_dir, output_raster)
 
 
+def copy_grs_img(input_dir, input_raster, output_dir, output_raster):
+    try:
+        if 'grsEx' in input_raster:
+            process_grs_ex(input_dir, input_raster, output_dir, output_raster)
+        else:
+            process_grs_in(input_dir, input_raster, output_dir, output_raster)
+    except:
+        print('Failed to process', os.path.join(input_dir, input_raster))
+        print_exc()
+
+
 def convert_raster(input_dir, output_dir):
     """
     Recursive function that converts all raster datasets under an input directory
@@ -99,10 +110,8 @@ def convert_raster(input_dir, output_dir):
             if output_rast.endswith('.tif'):
                 copy2(os.path.join(input_dir, input_file),
                       os.path.join(output_dir, output_rast))
-            elif 'grsEx' in input_file:
-                process_grs_ex(input_dir, input_file, output_dir, output_rast)
-            elif 'grsIn' in input_file:
-                process_grs_in(input_dir, input_file, output_dir, output_rast)
+            elif 'grs' in input_file:
+                copy_grs_img(input_dir, input_file, output_dir, output_rast)
             else:
                 copy_raster(input_dir, input_file, output_dir, output_rast)
         elif os.path.isdir(os.path.join(input_dir, input_file)):

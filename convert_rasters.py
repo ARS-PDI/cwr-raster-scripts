@@ -88,9 +88,10 @@ def convert_raster(input_dir, output_dir):
             if output_rast.endswith('.tif'):
                 copy2(os.path.join(input_dir, input_file),
                       os.path.join(output_dir, output_rast))
-                continue
-
-            copy_raster(input_dir, input_file, output_dir, output_rast)
+            elif 'grsIn' in input_file:
+                process_grs_in(input_dir, input_file, output_rast)
+            else:
+                copy_raster(input_dir, input_file, output_dir, output_rast)
         elif os.path.isdir(os.path.join(input_dir, input_file)):
             convert_raster(os.path.join(input_dir, input_file), output_dir)
 

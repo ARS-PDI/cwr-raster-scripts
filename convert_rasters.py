@@ -49,7 +49,7 @@ def copy_raster(input_dir, input_file, output_dir, output_rast):
         print_exc()
 
 
-def process_grs_ex(input_dir, input_raster, output_raster):
+def process_grs_ex(input_dir, input_raster, output_dir, output_raster):
     reclass_raster = arcpy.sa.Reclassify(os.path.join(
         input_dir, input_raster), 'VALUE', '0 NODATA;1 1', 'DATA')
 
@@ -77,7 +77,7 @@ def reclassify_grs_in(input_dir, input_raster, output_raster):
     return reclass_raster
 
 
-def process_grs_in(input_dir, input_raster, output_raster):
+def process_grs_in(input_dir, input_raster, output_dir, output_raster):
     reclass_raster = reclassify_grs_in(input_dir, input_raster, output_raster)
     copy_raster(input_dir, reclass_raster, output_dir, output_raster)
 
@@ -100,9 +100,9 @@ def convert_raster(input_dir, output_dir):
                 copy2(os.path.join(input_dir, input_file),
                       os.path.join(output_dir, output_rast))
             elif 'grsEx' in input_file:
-                process_grs_ex(input_dir, input_file, output_rast)
+                process_grs_ex(input_dir, input_file, output_dir, output_rast)
             elif 'grsIn' in input_file:
-                process_grs_in(input_dir, input_file, output_rast)
+                process_grs_in(input_dir, input_file, output_dir, output_rast)
             else:
                 copy_raster(input_dir, input_file, output_dir, output_rast)
         elif os.path.isdir(os.path.join(input_dir, input_file)):

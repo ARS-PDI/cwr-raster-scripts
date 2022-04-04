@@ -49,6 +49,28 @@ def copy_raster(input_dir, input_file, output_dir, output_rast):
         print_exc()
 
 
+def reclassify_grs_in(input_dir, input_raster, output_raster):
+    input_raster_path = os.path.join(input_dir, input_raster)
+    reclass_raster = f"{output_raster.replace('.mrf', '_reclass.tif')}"
+    output_raster_path = os.path.join(input_dir, reclass_raster)
+
+    base = arcpy.sa.Reclassify(
+        input_raster_path, 'VALUE', '1 1;NODATA 0', 'DATA')
+
+    input_basename = os.path.basename(input_dir)
+    arcpy.ddd.Minus(os.path.join(
+        input_dir, f'{input_basename}__thrsld_median.tif'), base, output_raster_path)
+
+    arcpy.sa.Reclassify(output_raster_path, "VALUE", "0 NODATA;1 1", "DATA")
+
+    return reclass_raster
+
+
+def process_grs_in(input_dir, input_raster, output_raster):
+    reclass_raster = reclassify_grs_in(input_dir, input_raster, output_raster)
+    copy_raster(input_dir, reclass_raster, output_dir, output_raster)
+
+
 def convert_raster(input_dir, output_dir):
     """
     Recursive function that converts all raster datasets under an input directory
@@ -92,7 +114,7 @@ if __name__ == "__main__":
     arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(
         'WGS 1984 UTM Zone 14N')
     arcpy.env.rasterStatistics = 'STATISTICS 1 1'
-    arcpy.env.overwriteOutput = False
+    arcpy.env.overwriteOutput = True
 
     print('Copying rasters from', input_dir, 'to', output_dir)
 

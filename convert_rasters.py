@@ -49,6 +49,17 @@ def copy_raster(input_dir, input_file, output_dir, output_rast):
         print_exc()
 
 
+def process_grs_ex(input_dir, input_raster, output_raster):
+    reclass_raster = arcpy.sa.Reclassify(os.path.join(
+        input_dir, input_raster), 'VALUE', '0 NODATA;1 1', 'DATA')
+
+    reclass_file = f"{output_raster.replace('.mrf', '_reclass.tif')}"
+    reclass_raster_path = os.path.join(input_dir, reclass_file)
+    reclass_raster.save(reclass_raster_path)
+
+    copy_raster(input_dir, reclass_file, output_dir, output_raster)
+
+
 def reclassify_grs_in(input_dir, input_raster, output_raster):
     input_raster_path = os.path.join(input_dir, input_raster)
     reclass_raster = f"{output_raster.replace('.mrf', '_reclass.tif')}"
@@ -88,6 +99,8 @@ def convert_raster(input_dir, output_dir):
             if output_rast.endswith('.tif'):
                 copy2(os.path.join(input_dir, input_file),
                       os.path.join(output_dir, output_rast))
+            elif 'grsEx' in input_file:
+                process_grs_ex(input_dir, input_file, output_rast)
             elif 'grsIn' in input_file:
                 process_grs_in(input_dir, input_file, output_rast)
             else:

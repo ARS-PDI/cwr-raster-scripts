@@ -31,6 +31,24 @@ def get_output_raster(file):
     raise RuntimeError(f'Unknown image type: {file}')
 
 
+def copy_raster(input_dir, input_file, output_dir, output_rast):
+    nodata_val = 255  # max unsigned 8-bit val
+    pixel_type = '8_BIT_UNSIGNED'
+
+    try:
+        arcpy.CopyRaster_management(in_raster=os.path.join(input_dir, input_file),
+                                    out_rasterdataset=os.path.join(
+                                        output_dir, output_rast),
+                                    background_value=nodata_val,
+                                    nodata_value=nodata_val,
+                                    pixel_type=pixel_type,
+                                    format='MRF',
+                                    transform='NONE')
+    except arcpy.ExecuteError:
+        print('Failed to convert', os.path.join(input_dir, input_file))
+        print_exc()
+
+
 def convert_raster(input_dir, output_dir):
     """
     Recursive function that converts all raster datasets under an input directory
@@ -50,21 +68,7 @@ def convert_raster(input_dir, output_dir):
                       os.path.join(output_dir, output_rast))
                 continue
 
-            try:
-                nodata_val = 255  # max unsigned 8-bit val
-                pixel_type = '8_BIT_UNSIGNED'
-
-                arcpy.CopyRaster_management(in_raster=os.path.join(input_dir, input_file),
-                                            out_rasterdataset=os.path.join(
-                                                output_dir, output_rast),
-                                            background_value=nodata_val,
-                                            nodata_value=nodata_val,
-                                            pixel_type=pixel_type,
-                                            format='MRF',
-                                            transform='NONE')
-            except arcpy.ExecuteError:
-                print('Failed to convert', os.path.join(input_dir, input_file))
-                print_exc()
+            copy_raster(input_dir, input_file, output_dir, output_rast)
         elif os.path.isdir(os.path.join(input_dir, input_file)):
             convert_raster(os.path.join(input_dir, input_file), output_dir)
 

@@ -72,7 +72,7 @@ def reclassify_grs_in(input_dir, input_raster, output_raster):
     arcpy.ddd.Minus(os.path.join(
         input_dir, f'{input_basename}__thrsld_median.tif'), base, output_raster_path)
 
-    arcpy.sa.Reclassify(output_raster_path, "VALUE", "0 NODATA;1 1", "DATA")
+    arcpy.sa.Reclassify(output_raster_path, 'VALUE', '0 NODATA;1 1', 'DATA')
 
     return reclass_raster
 
@@ -94,10 +94,6 @@ def copy_grs_img(input_dir, input_raster, output_dir, output_raster):
 
 
 def convert_raster(input_dir, output_dir):
-    """
-    Recursive function that converts all raster datasets under an input directory
-    into an output folder
-    """
     for input_file in os.listdir(input_dir):
         if input_file.endswith('.tif'):
             output_file = input_file
@@ -123,7 +119,7 @@ def print_usage_msg():
         'Usage: python3 convert_rasters.py [input folder] [output folder]')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) != 3:
         print_usage_msg()
 

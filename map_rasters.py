@@ -1,110 +1,90 @@
 import os
 import sys
-import time
+
 import arcpy
 
-def stdize(s):
-    s = s.replace('__', '_')
-    s = s.replace(' ', '_')
-    s = s.replace('-', '_')
-    s = s.replace('.', '')
-    s = s.replace('(', '')
-    s = s.replace(')', '')
+mosaics = {
+    'distribution': 'distr',
+    'ex_situ_eco_gaps': 'ex_eco_gaps',
+    'in_situ_eco_gaps': 'in_eco_gaps',
+    'ex_situ_collections': 'ex_coll',
+    'ex_situ_geo_gaps': 'ex_geo_gaps',
+    'in_situ_geo_gaps': 'in_geo_gaps'
+}
 
-    return s
 
-def map_rasters(input_dir, workspace, rast_funcs, fgdb):
-    fgdb_path = os.path.join(workspace, 'GDB', fgdb)
+def create_gdb(name):
+    print('Creating file geodatabase:', fgdb)
 
-    for file in os.listdir(input_dir):
-        if os.path.isdir(os.path.join(input_dir, file)):
-            for f in os.listdir(os.path.join(input_dir, file)):
-                if '.mrf' in f:
-                    fgdb = stdize(file)
-                    fgdb = fgdb + '.gdb'
+    arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
-                    if not os.path.exists(os.path.join(workspace, 'GDB', fgdb)):
-                        arcpy.CreateFileGDB_management(
-                            os.path.join(workspace, 'GDB'),
-                            fgdb
-                        )
 
-                    break
+def create_mosaics(gdb):
+    global mosaics
 
-            map_rasters(os.path.join(input_dir, file), workspace, rast_funcs, fgdb)
-        elif file.endswith('.mrf'):
-            input_rast_path = os.path.join(input_dir, file)
-            local_time = time.localtime()
-            print(time.strftime('[%I:%M:%S]', local_time), input_rast_path)
+    for mosaic in mosaics:
+        arcpy.CreateMosaicDataset_management(
+            gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
 
-            mosaic = file.replace('.mrf', '')
-            mosaic = stdize(mosaic)
 
-            # Figure out raster function
-            rast_func = None
-            if 'ga50' in file:
-                rast_func = rast_funcs['ga50']
-            elif 'grsEx' in file:
-                rast_func = rast_funcs['grsEx']
-            elif 'grsIn_proAreas' in file:
-                rast_func = rast_funcs['grsIn_proAreas']
-            elif 'thrsld_median' in file:
-                rast_func = rast_funcs['thrsld_median']
-            elif 'ecos' in file:
-                rast_func = rast_funcs['ecos']
+def add_rasters_to_mosaics(input_dir, fgdb):
+    global mosaics
 
-            if not rast_func:
-                continue
+    old_workspace = arcpy.env.workspace
+    arcpy.env.workspace = input_dir
+    rasters = arcpy.ListRasters('*')
+    arcpy.env.workspace = old_workspace
 
-            # Create new mosaic dataset in file Geodatabase
-            try:
-                arcpy.CreateMosaicDataset_management(
-                    fgdb_path,                                    # Path to new mosaic
-                    mosaic,                                       # Mosaic name
-                    arcpy.SpatialReference('WGS 1984')            # Coordinate system
-                )
-            except KeyboardInterrupt:
-                exit(0)
-            except:
-                pass
+    for mosaic in mosaics:
+        print('Creating mosaic dataset:', mosaic)
 
-            mosaic_path = os.path.join(fgdb_path, mosaic)
-            arcpy.AddRastersToMosaicDataset_management(
-                mosaic_path,                                      # Target mosaic dataset
-                'Raster Dataset',                                 # Raster type
-                input_rast_path                                   # Path to input raster
-            )
+        img_type = mosaics[mosaic]
+        mosaic_rasts = [r for r in rasters if img_type in r]
+        mosaic_path = os.path.join(fgdb, mosaic)
 
-            rast_func_path = os.path.join(workspace, rast_func)
-            arcpy.SetMosaicDatasetProperties_management(
-                mosaic_path,                                      # Target mosaic dataset
-                processing_templates=rast_func_path,              # Processing templates
-                default_processing_template=rast_func_path        # Default template
-            )
+        arcpy.AddRastersToMosaicDataset_management(mosaic_path,
+                                                   'Raster Dataset',
+                                                   [os.path.join(input_dir, r) for r in mosaic_rasts])
 
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        exit('Usage: python3 map_rasters.py [root folder]')
 
-    root_dir = sys.argv[1]
-    templates_dir = 'templates'
+def get_raster_func(input):
+    templates_dir = os.path.join(os.getcwd(), 'templates')
     rast_funcs = {
-        'ga50': os.path.join(templates_dir, 'ga50.rft.xml'),
-        'grsEx': os.path.join(templates_dir, 'grsEx.rft.xml'),
-        'grsIn_proAreas': os.path.join(templates_dir, 'grsIn_proAreas.rft.xml'),
-        'thrsld_median': os.path.join(templates_dir, 'thrsld_median.rft.xml'),
-        'ecos': os.path.join(templates_dir, 'ecos.rft.xml')
+        'distribution': os.path.join(templates_dir, 'distr.rft.xml'),
+        'ex_situ_collections': os.path.join(templates_dir, 'ex_coll.rft.xml'),
+        'ex_situ_geo_gaps': os.path.join(templates_dir, 'ex_geo_gaps.rft.xml'),
+        'in_situ_geo_gaps': os.path.join(templates_dir, 'in_geo_gaps.rft.xml')
     }
 
-    # Set environment variables
+    for img_type in rast_funcs:
+        if img_type in input:
+            return rast_funcs[img_type]
+
+
+def set_raster_funcs(fgdb):
+    print('Setting raster function processing templates')
+
+    for mosaic in mosaics:
+        try:
+            raster_func = get_raster_func(mosaic)
+
+            arcpy.SetMosaicDatasetProperties_management(os.path.join(fgdb, mosaic),
+                                                        processing_templates=raster_func,
+                                                        default_processing_template=raster_func)
+        except KeyError:
+            pass
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        exit('Usage: python3 map_rasters.py [root folder]')
+
     arcpy.env.workspace = os.getcwd()
-    arcpy.env.overwriteOutput = False
+    arcpy.env.overwriteOutput = True
+    fgdb = 'CWR.gdb'
 
-    # Create new file Geodatabase in current directory and set environment variables
-    try:
-        os.mkdir('GDB')
-    except FileExistsError:
-        pass
+    create_gdb(fgdb)
+    create_mosaics(fgdb)
 
-    # Map rasters using custom raster function file and put them into file geodatabase
-    map_rasters(root_dir, arcpy.env.workspace, rast_funcs, 'default.gdb')
+    add_rasters_to_mosaics(sys.argv[1], fgdb)
+    set_raster_funcs(fgdb)

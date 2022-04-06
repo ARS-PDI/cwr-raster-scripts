@@ -1,7 +1,22 @@
 import os
 import sys
+import xml.dom.minidom as dom
 
 import arcpy
+
+
+def set_resampling_method(sd_draft):
+    doc = dom.parse(sd_draft)
+    keys = doc.getElementsByTagName('Key')
+
+    for key in keys:
+        if key.firstChild.data == 'DefaultResamplingMethod':
+            # This assumes that the Value node is the second child of the PropertySetProperty node.
+            # Sets the default resampling method to Nearest Neighbor
+            key.parentNode.childNodes[1].firstChild.data = '0'
+
+    with open(sd_draft, 'w') as xml:
+        doc.writexml(xml)
 
 
 def publish_layers():
@@ -22,9 +37,8 @@ def publish_layers():
                                      folder_name='CWR',
                                      summary=mosaic,
                                      tags=f'CWR,{mosaic},ARS,PDI')
-
+            set_resampling_method(sd_draft)
             arcpy.StageService_server(sd_draft, sd)
-
             arcpy.UploadServiceDefinition_server(sd,
                                                  'https://pdiimagery.azurecloudgov.us/arcgis',
                                                  in_my_contents=True,

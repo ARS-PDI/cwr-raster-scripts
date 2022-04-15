@@ -71,5 +71,6 @@ if __name__ == '__main__':
                          os.environ.get('AG_USERNM'),
                          os.environ.get('AG_PASSWD'))
     arcpy.env.workspace = sys.argv[1]
+    arcpy.env.overwriteOutput = True
 
     publish_layers()

@@ -24,7 +24,7 @@ def create_mosaics(gdb):
 
     for mosaic in mosaics:
         arcpy.CreateMosaicDataset_management(
-            gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
+            gdb, mosaic, arcpy.SpatialReference('WGS 1984'), pixel_type='8_BIT_UNSIGNED')
 
 
 def add_rasters_to_mosaics(input_dir, fgdb):

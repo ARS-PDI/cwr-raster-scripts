@@ -14,10 +14,10 @@ def get_output_raster(file):
     img_type_map = {
         'ersEx_ecos': 'ex_eco_gaps.tif',
         'ersIn_ecos': 'in_eco_gaps.tif',
-        'ga50': 'ex_coll.mrf',
-        'grsEx': 'ex_geo_gaps.mrf',
-        'grsIn': 'in_geo_gaps.mrf',
-        'thrsld': 'distr.mrf'
+        'ga50': 'ex_coll.tif',
+        'grsEx': 'ex_geo_gaps.tif',
+        'grsIn': 'in_geo_gaps.tif',
+        'thrsld': 'distr.tif'
     }
 
     for key in img_type_map:
@@ -28,7 +28,7 @@ def get_output_raster(file):
 
             return f'{raster_name}_{img_type}'
 
-    raise RuntimeError(f'Unknown image type: {file}')
+    return stdize(file).replace('_reclass', '').replace('tif', '.tif')
 
 
 def copy_raster(input_dir, input_file, output_dir, output_rast):
@@ -42,7 +42,7 @@ def copy_raster(input_dir, input_file, output_dir, output_rast):
                                     background_value=nodata_val,
                                     nodata_value=nodata_val,
                                     pixel_type=pixel_type,
-                                    format='MRF',
+                                    format='TIFF',
                                     transform='NONE')
     except arcpy.ExecuteError:
         print('Failed to convert', os.path.join(input_dir, input_file))
@@ -53,7 +53,7 @@ def process_grs_ex(input_dir, input_raster, output_dir, output_raster):
     reclass_raster = arcpy.sa.Reclassify(os.path.join(
         input_dir, input_raster), 'VALUE', '0 NODATA;1 1', 'DATA')
 
-    reclass_file = f"{output_raster.replace('.mrf', '_reclass.tif')}"
+    reclass_file = f"{output_raster.replace('.tif', '_reclass.tif')}"
     reclass_raster_path = os.path.join(input_dir, reclass_file)
     reclass_raster.save(reclass_raster_path)
 
@@ -62,7 +62,7 @@ def process_grs_ex(input_dir, input_raster, output_dir, output_raster):
 
 def reclassify_grs_in(input_dir, input_raster, output_raster):
     input_raster_path = os.path.join(input_dir, input_raster)
-    reclass_raster = f"{output_raster.replace('.mrf', '_reclass.tif')}"
+    reclass_raster = f"{output_raster.replace('.tif', '_reclass.tif')}"
     output_raster_path = os.path.join(input_dir, reclass_raster)
 
     base = arcpy.sa.Reclassify(
@@ -99,17 +99,15 @@ def convert_raster(input_dir, output_dir):
             output_file = input_file
 
             if 'ga50' in input_file:
-                output_file = f'{os.path.basename(input_dir)}_ga50.mrf'
+                output_file = f'{os.path.basename(input_dir)}_ga50.tif'
 
             output_rast = get_output_raster(output_file)
 
-            if output_rast.endswith('.tif'):
-                copy2(os.path.join(input_dir, input_file),
-                      os.path.join(output_dir, output_rast))
-            elif 'grs' in input_file:
+            if 'grs' in input_file:
                 copy_grs_img(input_dir, input_file, output_dir, output_rast)
             else:
-                copy_raster(input_dir, input_file, output_dir, output_rast)
+                copy2(os.path.join(input_dir, input_file),
+                    os.path.join(output_dir, output_rast))
         elif os.path.isdir(os.path.join(input_dir, input_file)):
             convert_raster(os.path.join(input_dir, input_file), output_dir)
 
@@ -129,7 +127,6 @@ if __name__ == '__main__':
     if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
         print_usage_msg()
 
-    arcpy.env.compression = 'LERC 0'
     arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(
         'WGS 1984 UTM Zone 14N')
     arcpy.env.rasterStatistics = 'STATISTICS 1 1'

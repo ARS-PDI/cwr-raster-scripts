@@ -42,7 +42,7 @@ def publish_layers():
         try:
             arcpy.CreateImageSDDraft(mosaic,
                                      sd_draft,
-                                     f'cwr_{mosaic}',
+                                     f'test_{mosaic}',
                                      'ARCGIS_SERVER',
                                      copy_data_to_server=True,
                                      folder_name='CWR',

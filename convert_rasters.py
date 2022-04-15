@@ -111,8 +111,7 @@ if __name__ == '__main__':
     if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
         print_usage_msg()
 
-    arcpy.env.outputCoordinateSystem = arcpy.SpatialReference(
-        'WGS 1984 UTM Zone 14N')
+    arcpy.env.outputCoordinateSystem = arcpy.SpatialReference('GCS_WGS_1984')
     arcpy.env.rasterStatistics = 'STATISTICS 1 1'
     arcpy.env.overwriteOutput = True
 

@@ -19,10 +19,11 @@ def create_gdb(name):
     arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
 
-def create_mosaics(gdb):
-    global mosaics
-
-    for mosaic in mosaics:
+def create_mosaic(gdb, mosaic, img_type):
+    if 'eco_gaps' in img_type:
+        arcpy.CreateMosaicDataset_management(
+            gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
+    else:
         arcpy.CreateMosaicDataset_management(
             gdb, mosaic, arcpy.SpatialReference('WGS 1984'), pixel_type='8_BIT_UNSIGNED')
 
@@ -42,6 +43,7 @@ def add_rasters_to_mosaics(input_dir, fgdb):
         mosaic_rasts = [r for r in rasters if img_type in r]
         mosaic_path = os.path.join(fgdb, mosaic)
 
+        create_mosaic(fgdb, mosaic, img_type)
         arcpy.AddRastersToMosaicDataset_management(mosaic_path,
                                                    'Raster Dataset',
                                                    [os.path.join(input_dir, r) for r in mosaic_rasts])
@@ -84,7 +86,5 @@ if __name__ == '__main__':
     fgdb = 'CWR.gdb'
 
     create_gdb(fgdb)
-    create_mosaics(fgdb)
-
     add_rasters_to_mosaics(sys.argv[1], fgdb)
     set_raster_funcs(fgdb)

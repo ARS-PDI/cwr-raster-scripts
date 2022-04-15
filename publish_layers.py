@@ -21,13 +21,13 @@ def set_resampling_method(sd_draft):
 
 def set_override(sd_draft):
     with open(sd_draft, 'r') as file:
-        filedata = file.read()
+        file_data = file.read()
 
-    filedata = filedata.replace(
+    file_data = file_data.replace(
         'esriServiceDefinitionType_New', 'esriServiceDefinitionType_Replacement')
 
     with open(sd_draft, 'w') as file:
-        file.write(filedata)
+        file.write(file_data)
 
 
 def publish_layers():

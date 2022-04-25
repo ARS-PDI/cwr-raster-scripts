@@ -13,22 +13,22 @@ mosaics = {
 }
 
 
-def create_gdb(name):
+def create_gdb(fgdb_dir, name):
     print('Creating file geodatabase:', name)
 
-    arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
+    arcpy.CreateFileGDB_management(fgdb_dir, name)
 
 
-def create_mosaic(gdb, mosaic, img_type):
+def create_mosaic(fgdb_dir, gdb, mosaic, img_type):
     if 'eco_gaps' in img_type:
         arcpy.CreateMosaicDataset_management(
-            gdb, mosaic, arcpy.SpatialReference('WGS 1984'))
+            os.path.join(fgdb_dir, gdb), mosaic, arcpy.SpatialReference('WGS 1984'))
     else:
         arcpy.CreateMosaicDataset_management(
-            gdb, mosaic, arcpy.SpatialReference('WGS 1984'), pixel_type='8_BIT_UNSIGNED')
+            os.path.join(fgdb_dir, gdb), mosaic, arcpy.SpatialReference('WGS 1984'), pixel_type='8_BIT_UNSIGNED')
 
 
-def add_rasters_to_mosaics(input_dir, fgdb):
+def add_rasters_to_mosaics(input_dir, fgdb_dir, fgdb):
     global mosaics
 
     old_workspace = arcpy.env.workspace
@@ -41,9 +41,9 @@ def add_rasters_to_mosaics(input_dir, fgdb):
 
         img_type = mosaics[mosaic]
         mosaic_rasts = [r for r in rasters if img_type in r]
-        mosaic_path = os.path.join(fgdb, mosaic)
+        mosaic_path = os.path.join(fgdb_dir, fgdb, mosaic)
 
-        create_mosaic(fgdb, mosaic, img_type)
+        create_mosaic(fgdb_dir, fgdb, mosaic, img_type)
         arcpy.AddRastersToMosaicDataset_management(mosaic_path,
                                                    'Raster Dataset',
                                                    [os.path.join(input_dir, r) for r in mosaic_rasts])
@@ -63,14 +63,14 @@ def get_raster_func(input):
             return rast_funcs[img_type]
 
 
-def set_raster_funcs(fgdb):
+def set_raster_funcs(fgdb_dir, fgdb):
     print('Setting raster function processing templates')
 
     for mosaic in mosaics:
         try:
             raster_func = get_raster_func(mosaic)
 
-            arcpy.SetMosaicDatasetProperties_management(os.path.join(fgdb, mosaic),
+            arcpy.SetMosaicDatasetProperties_management(os.path.join(fgdb_dir, fgdb, mosaic),
                                                         processing_templates=raster_func,
                                                         default_processing_template=raster_func)
         except KeyError:
@@ -82,9 +82,11 @@ def main(input_dir):
     arcpy.env.overwriteOutput = True
     fgdb = 'CWR.gdb'
 
-    create_gdb(fgdb)
-    add_rasters_to_mosaics(input_dir, fgdb)
-    set_raster_funcs(fgdb)
+    fgdb_dir = os.path.dirname(input_dir)
+
+    create_gdb(fgdb_dir, fgdb)
+    add_rasters_to_mosaics(input_dir, fgdb_dir, fgdb)
+    set_raster_funcs(fgdb_dir, fgdb)
 
 
 if __name__ == '__main__':

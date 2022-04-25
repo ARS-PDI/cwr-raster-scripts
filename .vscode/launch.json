@@ -1,0 +1,38 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "1. Copy rasters",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\convert_rasters.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        "C:\\CWR\\srcSpeciesLevelData",
+        "C:\\CWR\\stagingSpeciesLevelData"
+      ]
+    },
+    {
+      "name": "2. Create mosaics",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\map_rasters.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["C:\\CWR\\stagingSpeciesLevelData"]
+    },
+    {
+      "name": "3. Publish layers",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\publish_layers.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["C:\\CWR\\CWR.gdb"]
+    }
+  ]
+}

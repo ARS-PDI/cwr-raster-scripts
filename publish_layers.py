@@ -53,8 +53,8 @@ def publish_layers():
             arcpy.StageService_server(sd_draft, sd)
             arcpy.UploadServiceDefinition_server(sd,
                                                  'https://pdiimagery.azurecloudgov.us/arcgis',
-                                                 in_my_contents=True,
-                                                 in_public=True,
+                                                 in_my_contents='SHARE_ONLINE',
+                                                 in_public='PUBLIC',
                                                  in_organization='SHARE_ORGANIZATION')
         except arcpy.ExecuteError as e:
             raise e

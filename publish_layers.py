@@ -63,14 +63,18 @@ def publish_layers():
             os.remove(os.path.join(os.getcwd(), sd))
 
 
+def main(workspace):
+    arcpy.SignInToPortal('https://pdienterprise.azurecloudgov.us/portal',
+                         os.environ.get('AG_USERNM'),
+                         os.environ.get('AG_PASSWD'))
+    arcpy.env.workspace = workspace
+    arcpy.env.overwriteOutput = True
+
+    publish_layers()
+
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         exit('Usage: python3 publish_layers.py [GDBs folder]')
 
-    arcpy.SignInToPortal('https://pdienterprise.azurecloudgov.us/portal',
-                         os.environ.get('AG_USERNM'),
-                         os.environ.get('AG_PASSWD'))
-    arcpy.env.workspace = sys.argv[1]
-    arcpy.env.overwriteOutput = True
-
-    publish_layers()
+    main(sys.argv[1])

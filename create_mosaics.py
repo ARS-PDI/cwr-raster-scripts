@@ -14,7 +14,7 @@ mosaics = {
 
 
 def create_gdb(name):
-    print('Creating file geodatabase:', fgdb)
+    print('Creating file geodatabase:', name)
 
     arcpy.CreateFileGDB_management(arcpy.env.workspace, name)
 
@@ -77,14 +77,18 @@ def set_raster_funcs(fgdb):
             pass
 
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        exit('Usage: python3 map_rasters.py [root folder]')
-
+def main(input_dir):
     arcpy.env.workspace = os.getcwd()
     arcpy.env.overwriteOutput = True
     fgdb = 'CWR.gdb'
 
     create_gdb(fgdb)
-    add_rasters_to_mosaics(sys.argv[1], fgdb)
+    add_rasters_to_mosaics(input_dir, fgdb)
     set_raster_funcs(fgdb)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        exit('Usage: python3 map_rasters.py [root folder]')
+
+    main(sys.argv[1])

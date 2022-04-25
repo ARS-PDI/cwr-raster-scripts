@@ -101,13 +101,7 @@ def print_usage_msg():
         'Usage: python3 convert_rasters.py [input folder] [output folder]')
 
 
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print_usage_msg()
-
-    input_dir = sys.argv[1]
-    output_dir = sys.argv[2]
-
+def main(input_dir, output_dir):
     if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
         print_usage_msg()
 
@@ -118,3 +112,10 @@ if __name__ == '__main__':
     print('Copying rasters from', input_dir, 'to', output_dir)
 
     convert_raster(input_dir, output_dir)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print_usage_msg()
+
+    main(sys.argv[1], sys.argv[2])

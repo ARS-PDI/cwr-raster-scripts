@@ -102,8 +102,11 @@ def print_usage_msg():
 
 
 def main(input_dir, output_dir):
-    if not os.path.isdir(input_dir) or not os.path.isdir(output_dir):
+    if not os.path.isdir(input_dir):
         print_usage_msg()
+
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir)
 
     arcpy.env.outputCoordinateSystem = arcpy.SpatialReference('GCS_WGS_1984')
     arcpy.env.rasterStatistics = 'STATISTICS 1 1'

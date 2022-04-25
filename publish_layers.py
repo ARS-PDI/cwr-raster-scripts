@@ -50,7 +50,7 @@ def publish_layers():
                                      tags=f'CWR,{mosaic},ARS,PDI')
             set_resampling_method(sd_draft)
             set_override(sd_draft)
-            arcpy.StageService_server(sd_draft, sd)
+            arcpy.StageService_server(sd_draft, os.path.join(os.getcwd(), sd))
             arcpy.UploadServiceDefinition_server(sd,
                                                  'https://pdiimagery.azurecloudgov.us/arcgis',
                                                  in_my_contents='SHARE_ONLINE',

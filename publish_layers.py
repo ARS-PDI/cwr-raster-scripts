@@ -30,6 +30,11 @@ def set_override(sd_draft):
         file.write(file_data)
 
 
+def set_properties(sd_draft):
+    set_resampling_method(sd_draft)
+    set_override(sd_draft)
+
+
 def publish_layers():
     mosaics = arcpy.ListDatasets(feature_type='Mosaic')
 
@@ -48,8 +53,7 @@ def publish_layers():
                                      folder_name='CWR',
                                      summary=mosaic,
                                      tags=f'CWR,{mosaic},ARS,PDI')
-            set_resampling_method(sd_draft)
-            set_override(sd_draft)
+            set_properties(sd_draft)
             arcpy.StageService_server(sd_draft, os.path.join(os.getcwd(), sd))
             arcpy.UploadServiceDefinition_server(sd,
                                                  'https://pdiimagery.azurecloudgov.us/arcgis',

@@ -30,9 +30,22 @@ def set_override(sd_draft):
         file.write(file_data)
 
 
+def set_public(sd_draft):
+    doc = dom.parse(sd_draft)
+    keys = doc.getElementsByTagName('Key')
+
+    for key in keys:
+        if key.firstChild.data == 'PackageIsPublic':
+            key.parentNode.childNodes[1].firstChild.data = 'true'
+
+    with open(sd_draft, 'w') as xml:
+        doc.writexml(xml)
+
+
 def set_properties(sd_draft):
     set_resampling_method(sd_draft)
     set_override(sd_draft)
+    set_public(sd_draft)
 
 
 def publish_layers():
@@ -56,10 +69,7 @@ def publish_layers():
             set_properties(sd_draft)
             arcpy.StageService_server(sd_draft, os.path.join(os.getcwd(), sd))
             arcpy.UploadServiceDefinition_server(sd,
-                                                 'https://pdiimagery.azurecloudgov.us/arcgis',
-                                                 in_my_contents='SHARE_ONLINE',
-                                                 in_public='PUBLIC',
-                                                 in_organization='SHARE_ORGANIZATION')
+                                                 'https://pdiimagery.azurecloudgov.us/arcgis')
         except arcpy.ExecuteError as e:
             raise e
         finally:

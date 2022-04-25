@@ -97,8 +97,7 @@ def convert_raster(input_dir, output_dir):
 
 
 def print_usage_msg():
-    raise ValueError(
-        'Usage: python3 convert_rasters.py [input folder] [output folder]')
+    exit('Usage: python3 convert_rasters.py [input folder] [output folder]')
 
 
 def main(input_dir, output_dir):

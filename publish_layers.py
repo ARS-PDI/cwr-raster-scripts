@@ -5,18 +5,22 @@ import xml.dom.minidom as dom
 import arcpy
 
 
-def set_resampling_method(sd_draft):
+def update_xml_kv(sd_draft, tag_name, tag_data, value):
     doc = dom.parse(sd_draft)
-    keys = doc.getElementsByTagName('Key')
+    keys = doc.getElementsByTagName(tag_name)
 
     for key in keys:
-        if key.firstChild.data == 'DefaultResamplingMethod':
+        if key.firstChild.data == tag_data:
             # This assumes that the Value node is the second child of the PropertySetProperty node.
-            # Sets the default resampling method to Nearest Neighbor
-            key.parentNode.childNodes[1].firstChild.data = '0'
+            key.parentNode.childNodes[1].firstChild.data = value
 
     with open(sd_draft, 'w') as xml:
         doc.writexml(xml)
+
+
+def set_resampling_method(sd_draft):
+    # Sets the default resampling method to Nearest Neighbor (option 0)
+    update_xml_kv(sd_draft, 'Key', 'DefaultResamplingMethod', '0')
 
 
 def set_override(sd_draft):
@@ -31,15 +35,7 @@ def set_override(sd_draft):
 
 
 def set_public(sd_draft):
-    doc = dom.parse(sd_draft)
-    keys = doc.getElementsByTagName('Key')
-
-    for key in keys:
-        if key.firstChild.data == 'PackageIsPublic':
-            key.parentNode.childNodes[1].firstChild.data = 'true'
-
-    with open(sd_draft, 'w') as xml:
-        doc.writexml(xml)
+    update_xml_kv(sd_draft, 'Key', 'PackageIsPublic', 'true')
 
 
 def set_properties(sd_draft):
